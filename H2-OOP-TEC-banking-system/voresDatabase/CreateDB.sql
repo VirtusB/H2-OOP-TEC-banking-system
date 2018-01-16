@@ -27,7 +27,7 @@ GO
 
 INSERT INTO Customers (FirstName, LastName)
 	VALUES ('Test', 'Testman'),
-	VALUES ('Testie','Testman2')
+	 ('Testie','Testman2')
 	
 Create Table AccountTypes (
 	AccountTypeID int IDENTITY(1,1) PRIMARY KEY,
@@ -56,7 +56,8 @@ Create Table Accounts (
 GO
 
 INSERT INTO Accounts (customerId, AccountNo, AccountTypeId, saldo)
-VALUES (1, 1050, 3, 10000)
+VALUES (1, 1050, 3, 10000),
+		(2, 1100, 2, -3.50)
 
 CREATE TABLE TransactionTypes (
 	TransactionTypeID int PRIMARY KEY NOT NULL ,
