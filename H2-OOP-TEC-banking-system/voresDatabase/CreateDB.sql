@@ -65,8 +65,8 @@ GO
 
 INSERT INTO Accounts (customerId, AccountNo, AccountTypeId, saldo)
 VALUES	(1, 1050, 3, 10000),
-		(2, 1100, 2, -3.50)
-		(2, 4250, 2, 1337.65)
+		(2, 1100, 2, -3.50),
+		(2, 4250, 6, 1337.65)
 
 CREATE TABLE TransactionTypes (
 	TransactionTypeID int PRIMARY KEY NOT NULL ,
@@ -91,8 +91,10 @@ CREATE TABLE Transactions (
 GO
 
 INSERT INTO Transactions (AccountId, Amount, TransactionTypeID)
-VALUES		(1, 200, 1),
-			(1, -300, 2)
+VALUES		(1, 200, 2),
+			(1, -300, 1),
+			(3, 600, 2),
+			(2, -10, 1)
 
 GO
 
@@ -102,4 +104,14 @@ AccountTypes.AccountTypeName
 FROM customers
 INNER JOIN Accounts ON Customers.CustomerID = Accounts.CustomerId
 INNER JOIN AccountTypes ON Accounts.AccountTypeId = AccountTypes.AccountTypeID
+
+
+
+SELECT AccountNo, AccountTypeName, Transactions.Created, Transactions.Amount, TransactionName
+FROM customers
+JOIN Accounts ON Customers.CustomerID = Accounts.CustomerId
+JOIN AccountTypes ON Accounts.AccountTypeId = AccountTypes.AccountTypeID
+JOIN Transactions ON Accounts.AccountID = Transactions.AccountId
+JOIN TransactionTypes ON Transactions.TransactiontypeId = TransactionTypes.TransactionTypeID
+WHERE Customers.customerid = 1
 */
