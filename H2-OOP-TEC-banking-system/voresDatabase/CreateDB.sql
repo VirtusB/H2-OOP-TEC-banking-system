@@ -26,7 +26,8 @@ CREATE TABLE Customers (
 GO
 
 INSERT INTO Customers (FirstName, LastName)
-	VALUES ('Test', 'Testman')
+	VALUES ('Test', 'Testman'),
+	VALUES ('Testie','Testman2')
 	
 Create Table AccountTypes (
 	AccountTypeID int IDENTITY(1,1) PRIMARY KEY,
