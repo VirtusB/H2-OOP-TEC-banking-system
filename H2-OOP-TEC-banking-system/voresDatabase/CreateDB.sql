@@ -20,14 +20,18 @@ CREATE TABLE Customers (
 	CustomerID int IDENTITY(1,1) PRIMARY KEY,
 	Created datetime NOT NULL DEFAULT GETDATE(),
 	FirstName nvarchar(50) NOT NULL,
-	LastName nvarchar(50) NOT NULL
+	LastName nvarchar(50) NOT NULL,
+	Address nvarchar(50),
+	City nvarchar(50),
+	PostalCode int,
+	Active bit NOT NULL default 1
 	)
 
 GO
 
-INSERT INTO Customers (FirstName, LastName)
-	VALUES ('Test', 'Testman'),
-	 ('Testie','Testman2')
+INSERT INTO Customers (FirstName, LastName, Address, City, PostalCode)
+	VALUES 	('Test', 'Testman', 'Testvej', 'TestCity', 2400),
+			('Testie','Testman2', 'Testgade', 'TestVillage', 2800)
 	
 Create Table AccountTypes (
 	AccountTypeID int IDENTITY(1,1) PRIMARY KEY,
@@ -42,6 +46,10 @@ VALUES	('Opsparing', 0.027),
 		('Pensionskonto', 0.04), 
 		('Børneopsparing', 0.05), 
 		('BudgetKonto', 0.01)
+		
+INSERT INTO ACcountTypes (AccountTypeName)
+VALUES	('Lån'),
+		('Lønkonto')
 
 Create Table Accounts (
 	AccountID int IDENTITY(1,1) PRIMARY KEY,
@@ -56,8 +64,9 @@ Create Table Accounts (
 GO
 
 INSERT INTO Accounts (customerId, AccountNo, AccountTypeId, saldo)
-VALUES (1, 1050, 3, 10000),
+VALUES	(1, 1050, 3, 10000),
 		(2, 1100, 2, -3.50)
+		(2, 4250, 2, 1337.65)
 
 CREATE TABLE TransactionTypes (
 	TransactionTypeID int PRIMARY KEY NOT NULL ,
@@ -78,6 +87,12 @@ CREATE TABLE Transactions (
 	Amount float NOT NULL,
 	TransactionTypeId int NOT NULL FOREIGN KEY REFERENCES TransactionTypes(TransactionTypeID)
 	)
+
+GO
+
+INSERT INTO Transactions (AccountId, Amount, TransactionTypeID)
+VALUES		(1, 200, 1),
+			(1, -300, 2)
 
 GO
 
