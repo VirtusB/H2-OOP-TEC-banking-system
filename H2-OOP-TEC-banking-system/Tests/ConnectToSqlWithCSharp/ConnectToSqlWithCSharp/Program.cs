@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Diagnostics;
 
+
 namespace ConnectToSqlWithCSharp
 {
-    class Program
+    static class Program
     {
-
-
-
-
         static void ShowData()
         {
             SqlConnection conn = new SqlConnection(); // lav en forbindelse til serveren og databasen
@@ -34,7 +31,7 @@ namespace ConnectToSqlWithCSharp
                     //
 
                 }
-                Console.WriteLine("AccountID: \t{0}\nCustomerId: \t{1}\nCreated: \t{2}\nAccountNo: \t{3}\nKontotype: \t{4}\nSaldo: \t\t{5}\nActive: \t{6}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6)); //udskriv resultaterne
+                Console.WriteLine("AccountID: \t\t{0}\nCustomerId: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5}\nKonto aktiv?: \t\t{6}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6)); //udskriv resultaterne
             }
 
             reader.Close();
@@ -64,90 +61,134 @@ namespace ConnectToSqlWithCSharp
             int customerSlettet = cmd.ExecuteNonQuery();
             if (customerSlettet > 0)
             {
-                Console.WriteLine("Slettet - tryk enter");
-                Console.ReadKey();
+                Console.WriteLine("Slettet");
+
             }
             else
             {
-                Console.WriteLine("Ikke fundet -try enter");
-                Console.ReadKey();
+                Console.WriteLine("Ikke fundet");
+
             }
             conn.Close();
         }
 
-
-
-        static void Main(string[] args)
+        static void AddCustomer()
         {
-
-            string[] menuItems =
-             {
-                "List all customers",
-                "Add customer",
-                "Delete customer",
-                "Edit customer",
-                "Exit"
-            };
+            Console.Write("Indtast fornavn: ");
+            string cFornavn = Console.ReadLine();
 
 
-            var selection = ShowMenu(menuItems);
+            Console.Write("\nIndtast efternavn: ");
+            string cEfternavn = Console.ReadLine();
 
-            if (selection == 1)
+            Console.Write("\n Adresse: ");
+            string cAdresse = Console.ReadLine();
+
+            Console.Write("\n By: ");
+            string cByNavn = Console.ReadLine();
+
+            Console.Write("\n Postnr: ");
+            string cPostnr = Console.ReadLine();
+
+
+
+            SqlConnection conn = new SqlConnection(); // lav en forbindelse til serveren og databasen
+            conn.ConnectionString =
+                "Data Source=DESKTOP-TN867E5;" +
+                "Initial Catalog=H2_OOP_TEC_Banking_System;" +
+                "Integrated Security=SSPI;";
+
+
+
+            conn.Close();
+            SqlCommand cmd = new SqlCommand("INSERT INTO Customers (firstname, lastname, address, city, postalcode) VALUES ('" + cFornavn + "', '" + cEfternavn + "', '" + cAdresse + "', '" + cByNavn + "', '" + cPostnr + "')", conn);
+
+
+            conn.Open();
+
+            int customerOprettet = cmd.ExecuteNonQuery();
+            if (customerOprettet > 0)
             {
-                Console.WriteLine("List all customers");
-                ShowData();
-            }
-            else if (selection == 2)
-            {
-                Console.WriteLine("Add customer");
-            }
-            else if (selection == 3)
-            {
-                Console.WriteLine("Delete customer");
-                DeleteCustomer();
-            }
-            else if (selection == 4)
-            {
-                Console.WriteLine("Edit customer");
-            }
-            else if (selection == -1)
-            {
+                Console.WriteLine("Oprettet kunden: " + cFornavn);
 
             }
             else
             {
-                Console.WriteLine("Goodbye");
+                Console.WriteLine("Fejl i kundeoprettelse");
+
             }
-
-
-
-
-
-
-
-
-            if (Debugger.IsAttached)
-            {
-                Console.ReadLine();
-            }
+            conn.Close();
         }
 
-        static int ShowMenu(string[] menuItems)
+        static void Main(string[] args)
         {
-            Console.Clear();
-            Console.WriteLine("Choose option\n");
-            for (int i = 0; i < menuItems.Length; i++)
-            {
-                Console.WriteLine((i + 1) + ") " + menuItems[i]);
-            }
 
-            int selection;
-            while (!int.TryParse(Console.ReadLine(), out selection) || selection < 1 || selection > 5)
+            // Menu start
+            bool done = false;
+            do
             {
-                Console.WriteLine("Choose a number between 1-5");
-            }
-            Console.WriteLine("Selection: " + selection);
-            return selection;
+                
+                Console.WriteLine("Vælg en mulighed:");
+                Console.WriteLine("\t1) Vis kundeoversigt");
+                Console.WriteLine("\t2) Tilføj kunde");
+                Console.WriteLine("\t3) Slet kunde");
+                Console.WriteLine("\t4) Rediger kunde");
+                Console.WriteLine("\t5) Tilføj konto til kunde");
+                Console.WriteLine("\t6) Slet konto fra kunde");
+                Console.Write("Indtast valgmulighed (0 for at afslutte): ");
+                string strSelection = Console.ReadLine();
+                int iSel;
+                try
+                {
+                    iSel = int.Parse(strSelection);
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("\r\nHvad?\r\n");
+                    continue;
+                }
+                Console.Clear();
+                Console.WriteLine("Du valgte " + iSel);
+                switch (iSel)
+                {
+                    case 0:
+                        done = true;
+                        break;
+                    case 1:
+                        Console.Clear();
+                        Console.WriteLine("Kundeoversigt");
+                        ShowData();
+                        break;
+                    case 2:
+                        Console.Clear();
+                        Console.WriteLine("Tilføj en kunde");
+                        AddCustomer();
+                        break;
+                    case 3:
+                        Console.Clear();
+                        Console.WriteLine("Slet en kunde");
+                        DeleteCustomer();
+                        break;
+                    case 4:
+                        
+                        break;
+                    default:
+                        Console.WriteLine("Forkert, vælg en korrekt mulighed: {0}\r\n", iSel);
+                        continue;
+                }
+                Console.WriteLine();
+            } while (!done);
+
+            Console.WriteLine("\nFarvel!");
         }
+        // Menu slut
+
+                
+            
+
+    
+        }
+
+        
     }
-}
+
