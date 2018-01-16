@@ -25,26 +25,37 @@ CREATE TABLE Customers (
 
 GO
 
+INSERT INTO Customers (FirstName, LastName)
+	VALUES ('Test', 'Testman')
+	
 Create Table AccountTypes (
-	AccountTypeID int PRIMARY KEY,
+	AccountTypeID int IDENTITY(1,1) PRIMARY KEY,
 	AccountTypeName nvarchar(50),
-	InterestRate decimal NOT NULL default 0
+	InterestRate float NOT NULL default 0
 )
 
 GO
 
+INSERT INTO ACcountTypes (AccountTypeName, InterestRate)
+VALUES	('Opsparing', 0.027), 
+		('Pensionskonto', 0.04), 
+		('Børneopsparing', 0.05), 
+		('BudgetKonto', 0.01)
 
 Create Table Accounts (
 	AccountID int IDENTITY(1,1) PRIMARY KEY,
 	CustomerId int NOT NULL FOREIGN KEY REFERENCES Customers(CustomerID),
 	Created datetime DEFAULT GETDATE(),
-	AccountNo int NOT NULL,
+	AccountNo nvarchar(50) NOT NULL,
 	AccountTypeId int FOREIGN KEY REFERENCES AccountTypes(AccountTypeID),
-	Saldo decimal,
+	Saldo float default 0,
 	Active bit NOT NULL default 1,
 	)
 
 GO
+
+INSERT INTO Accounts (customerId, AccountNo, AccountTypeId, saldo)
+VALUES (1, 1050, 3, 10000)
 
 CREATE TABLE TransactionTypes (
 	TransactionTypeID int PRIMARY KEY NOT NULL ,
@@ -62,9 +73,16 @@ CREATE TABLE Transactions (
 	TransactionID int IDENTITY(1,1) PRIMARY KEY,
 	AccountId int NOT NULL FOREIGN KEY REFERENCES Accounts(AccountID),
 	Created datetime NOT NULL default GETDATE(),
-	Amount decimal NOT NULL,
+	Amount float NOT NULL,
 	TransactionTypeId int NOT NULL FOREIGN KEY REFERENCES TransactionTypes(TransactionTypeID)
 	)
 
 GO
 
+/*SELECT CONCAT(FirstName, ' ', Lastname) as Name,
+Active,
+AccountTypes.AccountTypeName
+FROM customers
+INNER JOIN Accounts ON Customers.CustomerID = Accounts.CustomerId
+INNER JOIN AccountTypes ON Accounts.AccountTypeId = AccountTypes.AccountTypeID
+*/
