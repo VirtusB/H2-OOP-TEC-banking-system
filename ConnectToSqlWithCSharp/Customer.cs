@@ -91,7 +91,7 @@ namespace ConnectToSqlWithCSharp
             }
         }
 #endregion
-
+        //Tror vi bør fjerne denne constructor /Bjarke
         public Customer()
         {
             CustomerID = 0;
