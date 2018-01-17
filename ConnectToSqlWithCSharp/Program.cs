@@ -16,7 +16,8 @@ namespace ConnectToSqlWithCSharp
 
         static void Main(string[] args)
         {
-            //NU HAR JEG ÆNDRET I FILEN
+            //GUTTER SKAL VI IKKE OPRETTE EN SlACK? MIN MAIL ER bjarke.treufeldt@gmail.com !!!
+            //SÅ VI IKKE BEHØVER KOMMUNIKERE PÅ DISSE MÆRKELIGE MÅDER?
 
             Customer customer = new Customer();
             Account account = new Account();
