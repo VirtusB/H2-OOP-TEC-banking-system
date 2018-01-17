@@ -55,7 +55,7 @@ Create Table Accounts (
 	AccountID int IDENTITY(1,1) PRIMARY KEY,
 	CustomerId int NOT NULL FOREIGN KEY REFERENCES Customers(CustomerID),
 	Created datetime DEFAULT GETDATE(),
-	AccountNo nvarchar(50) NOT NULL,
+	AccountNo int NOT NULL UNIQUE,
 	AccountTypeId int FOREIGN KEY REFERENCES AccountTypes(AccountTypeID),
 	Saldo float default 0,
 	Active bit NOT NULL default 1,
@@ -114,4 +114,11 @@ JOIN AccountTypes ON Accounts.AccountTypeId = AccountTypes.AccountTypeID
 JOIN Transactions ON Accounts.AccountID = Transactions.AccountId
 JOIN TransactionTypes ON Transactions.TransactiontypeId = TransactionTypes.TransactionTypeID
 WHERE Customers.customerid = 1
+
+
+SELECT Transactions.TransactionID, Accounts.AccountNo, Transactions.Created, Transactions.Amount, TransactionTypes.TransactionName
+FROM Transactions
+JOIN Accounts ON Accounts.AccountID = Transactions.AccountId
+JOIN TransactionTypes ON Transactions.TransactionTypeId = TransactionTypes.TransactionTypeID
+WHERE AccountNO = 4250
 */
