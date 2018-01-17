@@ -115,6 +115,7 @@ JOIN Transactions ON Accounts.AccountID = Transactions.AccountId
 JOIN TransactionTypes ON Transactions.TransactiontypeId = TransactionTypes.TransactionTypeID
 WHERE Customers.customerid = 1
 
+
 SELECT Transactions.TransactionID, Accounts.AccountNo, Transactions.Created, Transactions.Amount, TransactionTypes.TransactionName
 FROM Transactions
 JOIN Accounts ON Accounts.AccountID = Transactions.AccountId
