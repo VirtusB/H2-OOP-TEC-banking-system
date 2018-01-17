@@ -9,23 +9,120 @@ namespace ConnectToSqlWithCSharp
 {
     public class Customer
     {
+
+        #region setters & getters
+        private int customerid;
+        private string firstname;
+        private string lastname;
+        private string address;
+        private string city;
+        private int postalcode;
+        
+
+        public int CustomerID
+        {
+            get
+            {
+                return customerid;
+            }
+            set
+            {
+                customerid = value;
+            }
+        }
+
+        public string FirstName
+        {
+            get
+            {
+                return firstname;
+            }
+            set
+            {
+                firstname = value;
+            }
+        }
+
+        public string LastName
+        {
+            get
+            {
+                return lastname;
+            }
+            set
+            {
+                lastname = value;
+            }
+        }
+
+        public string Address
+        {
+            get
+            {
+                return address;
+            }
+            set
+            {
+                address = value;
+            }
+        }
+
+        public string City
+        {
+            get
+            {
+                return city;
+            }
+            set
+            {
+                city = value;
+            }
+        }
+
+        public int PostalCode
+        {
+            get
+            {
+                return postalcode;
+            }
+            set
+            {
+                postalcode = value;
+            }
+        }
+#endregion
+
+        public Customer()
+        {
+            CustomerID = 0;
+            FirstName = "Intet fornavn";
+            LastName = "Intet efternavn";
+            Address = "Ingen adresse";
+            City = "Ingen by";
+            PostalCode = 0000;
+        }
+
         public void AddCustomer()
         {
-            Console.Write("Indtast fornavn: ");
-            string cFornavn = Console.ReadLine();
+            //Customer customer = new Customer();
+
+            
+
+            //Console.Write("Indtast fornavn: ");
+            //customer.FirstName = Console.ReadLine();
+
+            //Console.Write("\nIndtast efternavn: ");
+            //customer.LastName = Console.ReadLine();
 
 
-            Console.Write("\nIndtast efternavn: ");
-            string cEfternavn = Console.ReadLine();
+            //Console.Write("\n Adresse: ");
+            //customer.Address = Console.ReadLine();
 
-            Console.Write("\n Adresse: ");
-            string cAdresse = Console.ReadLine();
+            //Console.Write("\n By: ");
+            //customer.City = Console.ReadLine();
 
-            Console.Write("\n By: ");
-            string cByNavn = Console.ReadLine();
-
-            Console.Write("\n Postnr: ");
-            string cPostnr = Console.ReadLine();
+            //Console.Write("\n Postnr: ");
+            //customer.PostalCode = Convert.ToInt32(Console.ReadLine());
 
 
 
@@ -38,7 +135,7 @@ namespace ConnectToSqlWithCSharp
 
 
             conn.Close();
-            SqlCommand cmd = new SqlCommand("INSERT INTO Customers (firstname, lastname, address, city, postalcode) VALUES ('" + cFornavn + "', '" + cEfternavn + "', '" + cAdresse + "', '" + cByNavn + "', '" + cPostnr + "')", conn);
+            SqlCommand cmd = new SqlCommand("INSERT INTO Customers (firstname, lastname, address, city, postalcode) VALUES ('" + firstname + "', '" + lastname + "', '" + address + "', '" + city + "', '" + postalcode + "')", conn);
 
 
             conn.Open();
@@ -46,7 +143,7 @@ namespace ConnectToSqlWithCSharp
             int customerOprettet = cmd.ExecuteNonQuery();
             if (customerOprettet > 0)
             {
-                Console.WriteLine("Oprettet kunden: " + cFornavn);
+                Console.WriteLine("Oprettet kunden: " + firstname + " " + lastname);
 
             }
             else
@@ -59,8 +156,14 @@ namespace ConnectToSqlWithCSharp
 
         public void DeleteCustomer()
         {
+            
+
+
+            Customer customer = new Customer();
+
             Console.Write("Indtast customer ID: ");
-            int cID = Convert.ToInt32(Console.ReadLine());
+            customer.CustomerID = Convert.ToInt32(Console.ReadLine());
+
 
 
 
@@ -73,12 +176,12 @@ namespace ConnectToSqlWithCSharp
 
 
 
-            SqlCommand cmd = new SqlCommand("DELETE FROM Accounts WHERE CustomerID=@cID", conn);
+            SqlCommand cmd = new SqlCommand("DELETE FROM Customers WHERE CustomerID=@cID", conn);
 
 
 
             cmd.Parameters.Add("@cID", System.Data.SqlDbType.Int);
-            cmd.Parameters["@cID"].Value = cID;
+            cmd.Parameters["@cID"].Value = customer.CustomerID;
             conn.Open();
 
             int customerSlettet = cmd.ExecuteNonQuery();

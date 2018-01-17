@@ -20,6 +20,7 @@ namespace ConnectToSqlWithCSharp
 
             Customer customer = new Customer();
             Account account = new Account();
+            Transaction transaction = new Transaction();
 
 
             // Menu start
@@ -28,12 +29,13 @@ namespace ConnectToSqlWithCSharp
             {
                 
                 Console.WriteLine("Vælg en mulighed:");
-                Console.WriteLine("\t1) Vis konti");
+                Console.WriteLine("\t1) Vis kunde");
                 Console.WriteLine("\t2) Tilføj kunde");
                 Console.WriteLine("\t3) Slet kunde");
                 Console.WriteLine("\t4) Rediger kunde");
-                Console.WriteLine("\t5) Tilføj konto til kunde");
+                Console.WriteLine("\t5) Vis konti");
                 Console.WriteLine("\t6) Slet konto fra kunde");
+                Console.WriteLine("\t7) Vis transaktioner");
                 Console.Write("Indtast valgmulighed (0 for at afslutte): ");
                 string strSelection = Console.ReadLine();
                 int iSel;
@@ -55,14 +57,29 @@ namespace ConnectToSqlWithCSharp
                         break;
                     case 1:
                         Console.Clear();
-                        Console.WriteLine("Kundeoversigt");
-                        account.ShowAccounts();
+                        Console.WriteLine("Vis kunde");
+                        
                         break;
                     case 2:
                         Console.Clear();
                         Console.WriteLine("Tilføj en kunde");
-                        
-                        
+
+                        Console.Write("Indtast fornavn: ");
+                        customer.FirstName = Console.ReadLine();
+
+                        Console.Write("\nIndtast efternavn: ");
+                        customer.LastName = Console.ReadLine();
+
+
+                        Console.Write("\n Adresse: ");
+                        customer.Address = Console.ReadLine();
+
+                        Console.Write("\n By: ");
+                        customer.City = Console.ReadLine();
+
+                        Console.Write("\n Postnr: ");
+                        customer.PostalCode = Convert.ToInt32(Console.ReadLine());
+
                         customer.AddCustomer();
                         break;
                     case 3:
@@ -74,10 +91,20 @@ namespace ConnectToSqlWithCSharp
                         Console.Clear();
                         Console.WriteLine("Rediger en kunde");
                         break;
+                    case 5:
+                        Console.Clear();
+                        Console.WriteLine("Vis konti");
+                        account.ShowAccounts();
+                        break;
                     case 6:
+                        Console.Clear();
                         account.DeleteAccount();
                         break;
-    
+                    case 7:
+                        Console.Clear();
+                        Console.WriteLine("Vis transaktioner");
+                        transaction.ShowTransactions();
+                        break;
                     default:
                         Console.WriteLine("Forkert, vælg en korrekt mulighed: {0}\r\n", iSel);
                         continue;

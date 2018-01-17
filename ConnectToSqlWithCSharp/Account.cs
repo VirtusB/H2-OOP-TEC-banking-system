@@ -10,6 +10,102 @@ namespace ConnectToSqlWithCSharp
     public class Account
     {
 
+        private int accountid;
+        private int customerid;
+        private DateTime created;
+        private int accountno;
+        private int accounttypeid;
+        private double saldo;
+        private bool active;
+
+        #region getters & setters
+        public int AccountID
+        {
+            get
+            {
+                return accountid;
+            }
+            set
+            {
+                accountid = value;
+            }
+        }
+
+        public int CustomerID
+        {
+            get
+            {
+                return customerid;
+            }
+            set
+            {
+                customerid = value;
+            }
+        }
+
+        public DateTime Created
+        {
+            get
+            {
+                return created;
+            }
+            set
+            {
+                created = value;
+            }
+        }
+
+        public int AccountNo
+        {
+            get
+            {
+                return accountno;
+            }
+            set
+            {
+                accountno = value;
+            }
+        }
+
+        public int AccountTypeID
+        {
+            get
+            {
+                return accounttypeid;
+            }
+            set
+            {
+                accounttypeid = value;
+            }
+        }
+
+        public double Saldo
+        {
+            get
+            {
+                return saldo;
+            }
+            set
+            {
+                saldo = value;
+            }
+        }
+
+        public bool Active
+        {
+            get
+            {
+                return active;
+            }
+            set
+            {
+                active = value;
+            }
+        }
+#endregion
+
+
+
         public void ShowAccounts()
         {
 
