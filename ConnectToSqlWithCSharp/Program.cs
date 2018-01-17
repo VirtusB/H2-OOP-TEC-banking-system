@@ -16,7 +16,7 @@ namespace ConnectToSqlWithCSharp
 
         static void Main(string[] args)
         {
-
+            //NU HAR JEG ÆNDRET I FILEN
 
             Customer customer = new Customer();
             Account account = new Account();
