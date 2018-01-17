@@ -75,8 +75,8 @@ CREATE TABLE TransactionTypes (
 
 INSERT INTO TransactionTypes(TransactionTypeID,TransactionName)
 VALUES 
-(1, 'Withdrawal'),
-(2, 'Deposit')
+(1, 'Udbetaling'),
+(2, 'Indbetaling')
 
 GO
 
