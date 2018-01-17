@@ -12,7 +12,7 @@ namespace ConnectToSqlWithCSharp
 {
     static class Program
     {
-       
+        public static string Navn = "Virtus";
 
         static void Main(string[] args)
         {
@@ -85,6 +85,9 @@ namespace ConnectToSqlWithCSharp
                     case 3:
                         Console.Clear();
                         Console.WriteLine("Slet en kunde");
+                        Console.Write("Indtast customer ID: ");
+                        customer.CustomerID = Convert.ToInt32(Console.ReadLine());
+
                         customer.DeleteCustomer();
                         break;
                     case 4:
@@ -103,6 +106,8 @@ namespace ConnectToSqlWithCSharp
                     case 7:
                         Console.Clear();
                         Console.WriteLine("Vis transaktioner");
+                        Console.WriteLine("\nIndtast kontonr. for den ønskede konto");
+                        Console.WriteLine("Tryk ENTER for at se alle transaktioner for alle konti");
                         transaction.ShowTransactions();
                         break;
                     default:

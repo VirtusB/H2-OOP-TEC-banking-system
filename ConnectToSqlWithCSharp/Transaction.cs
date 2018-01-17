@@ -84,8 +84,7 @@ namespace ConnectToSqlWithCSharp
         public void ShowTransactions()
         {
 
-            Console.WriteLine("\nIndtast kontonr. for den ønskede konto");
-            Console.WriteLine("Tryk ENTER for at se alle transaktioner for alle konti");
+            
 
             string showTransactionChoice = Console.ReadLine();
 
@@ -94,11 +93,8 @@ namespace ConnectToSqlWithCSharp
             if (int.TryParse(showTransactionChoice, out int showSpecificTransaction))
             {
 
-                SqlConnection conn = new SqlConnection(); // lav en forbindelse til serveren og databasen
-                conn.ConnectionString =
-                    "Data Source=DESKTOP-TN867E5;" +
-                    "Initial Catalog=H2_OOP_TEC_Banking_System;" +
-                    "Integrated Security=SSPI;";
+                SqlConnection conn = VoresServere.WhichServer(Program.Navn);
+
 
 
 
@@ -119,11 +115,7 @@ namespace ConnectToSqlWithCSharp
             }
             else
             {
-                SqlConnection conn = new SqlConnection(); // lav en forbindelse til serveren og databasen
-                conn.ConnectionString =
-                    "Data Source=DESKTOP-TN867E5;" +
-                    "Initial Catalog=H2_OOP_TEC_Banking_System;" +
-                    "Integrated Security=SSPI;";
+                SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
 
                 conn.Open(); // åben forbindelsen
@@ -139,8 +131,6 @@ namespace ConnectToSqlWithCSharp
                 conn.Close();
             }
         }
-
-
 
 
 

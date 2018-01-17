@@ -104,33 +104,9 @@ namespace ConnectToSqlWithCSharp
 
         public void AddCustomer()
         {
-            //Customer customer = new Customer();
-
-            
-
-            //Console.Write("Indtast fornavn: ");
-            //customer.FirstName = Console.ReadLine();
-
-            //Console.Write("\nIndtast efternavn: ");
-            //customer.LastName = Console.ReadLine();
 
 
-            //Console.Write("\n Adresse: ");
-            //customer.Address = Console.ReadLine();
-
-            //Console.Write("\n By: ");
-            //customer.City = Console.ReadLine();
-
-            //Console.Write("\n Postnr: ");
-            //customer.PostalCode = Convert.ToInt32(Console.ReadLine());
-
-
-
-            SqlConnection conn = new SqlConnection(); // lav en forbindelse til serveren og databasen
-            conn.ConnectionString =
-                "Data Source=DESKTOP-TN867E5;" +
-                "Initial Catalog=H2_OOP_TEC_Banking_System;" +
-                "Integrated Security=SSPI;";
+            SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
 
 
@@ -156,22 +132,9 @@ namespace ConnectToSqlWithCSharp
 
         public void DeleteCustomer()
         {
-            
 
 
-            Customer customer = new Customer();
-
-            Console.Write("Indtast customer ID: ");
-            customer.CustomerID = Convert.ToInt32(Console.ReadLine());
-
-
-
-
-            SqlConnection conn = new SqlConnection(); // lav en forbindelse til serveren og databasen
-            conn.ConnectionString =
-                "Data Source=DESKTOP-TN867E5;" +
-                "Initial Catalog=H2_OOP_TEC_Banking_System;" +
-                "Integrated Security=SSPI;";
+            SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
 
 
@@ -181,7 +144,7 @@ namespace ConnectToSqlWithCSharp
 
 
             cmd.Parameters.Add("@cID", System.Data.SqlDbType.Int);
-            cmd.Parameters["@cID"].Value = customer.CustomerID;
+            cmd.Parameters["@cID"].Value = customerid;
             conn.Open();
 
             int customerSlettet = cmd.ExecuteNonQuery();
