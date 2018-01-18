@@ -189,7 +189,8 @@ namespace ConnectToSqlWithCSharp
 
                 for (int i = 0; i < listOfCustomers.Count(); i++)
                 {
-                    WriteLine("Kunde {0}:\n", i + 1);
+                    
+                    WriteLine("Kunde {0}:\n", listOfCustomers[i].CustomerID);
                     Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname);
                     Console.WriteLine("Efternavn: \t {0}", listOfCustomers[i].lastname);
                     Console.WriteLine("Adresse: \t {0}", listOfCustomers[i].address);

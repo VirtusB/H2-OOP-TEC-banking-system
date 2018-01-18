@@ -25,12 +25,15 @@ namespace ConnectToSqlWithCSharp
             {
                 case "1":
                     Navn = "Virtus";
+                    Clear();
                     break;
                 case "2":
                     Navn = "Bjarke";
+                    Clear();
                     break;
                 case "3":
                     Navn = "Morten";
+                    Clear();
                     break;
                 default:
                     throw new NotImplementedException("You should type a number matching one of the three users, and press enter.");
@@ -50,9 +53,10 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine("\t3) Slet kunde");
                 Console.WriteLine("\t4) Rediger kunde");
                 Console.WriteLine("\t5) Vis konti");
-                Console.WriteLine("\t6) Slet konto fra kunde");
-                Console.WriteLine("\t7) Vis transaktioner");
-                Console.WriteLine("\t8) Opret transaktion");
+                Console.WriteLine("\t6) Opret Konto");
+                Console.WriteLine("\t7) Slet konto fra kunde");
+                Console.WriteLine("\t8) Vis transaktioner");
+                Console.WriteLine("\t9) Opret transaktion");
                 Console.Write("Indtast valgmulighed (0 for at afslutte): ");              
                 string strSelection = Console.ReadLine();
                 int iSel;
@@ -117,16 +121,21 @@ namespace ConnectToSqlWithCSharp
                         break;
                     case 6:
                         Console.Clear();
-                        account.DeleteAccount();
+                        WriteLine("Tilføj en konto til en kunde");
+                        account.AddAccount();
                         break;
                     case 7:
+                        Console.Clear();
+                        account.DeleteAccount();
+                        break;
+                    case 8:
                         Console.Clear();
                         Console.WriteLine("Vis transaktioner");
                         Console.WriteLine("\nIndtast kontonr. for den ønskede konto");
                         Console.WriteLine("Tryk ENTER for at se alle transaktioner for alle konti");
                         transaction.ShowTransactions();
                         break;
-                    case 8:
+                    case 9:
                         Console.Clear();
                         transaction.AddTransaction();
                         break;
