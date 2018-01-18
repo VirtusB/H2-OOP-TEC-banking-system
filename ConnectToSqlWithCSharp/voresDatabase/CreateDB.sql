@@ -48,7 +48,7 @@ VALUES	('Opsparing', 0.027),
 		('BudgetKonto', 0.01)
 		
 INSERT INTO ACcountTypes (AccountTypeName)
-VALUES	('Lån'),
+VALUES	('Lånekonto'),
 		('Lønkonto')
 
 Create Table Accounts (
@@ -64,9 +64,9 @@ Create Table Accounts (
 GO
 
 INSERT INTO Accounts (customerId, AccountNo, AccountTypeId, saldo)
-VALUES	(1, 1050, 3, 10000),
-		(2, 1100, 2, -3.50),
-		(2, 4250, 6, 1337.65)
+VALUES	(1, 1001, 3, 10000),
+		(2, 1002, 2, -3.50),
+		(2, 1003, 6, 1337.65)
 
 CREATE TABLE TransactionTypes (
 	TransactionTypeID int PRIMARY KEY NOT NULL ,
