@@ -177,7 +177,6 @@ namespace ConnectToSqlWithCSharp
             }
         }
         
-
         public void DeleteAccount()
         {
             Console.Write("Indtast kontonr: ");
@@ -186,33 +185,39 @@ namespace ConnectToSqlWithCSharp
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
             //TODO error checks
+            // TODO spørg om mange er sikker
+            // info om hvad man sletter
 
             SqlCommand selAccID = new SqlCommand("SELECT AccountID FROM Accounts WHERE AccountNo=@accNo", conn);
 
             selAccID.Parameters.Add("@accNo", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
             selAccID.Parameters["@accNo"].Value = accNo;
             conn.Open();
-            SqlDataReader reader = selAccID.ExecuteReader();
-
-            int accountDeleted = reader.GetInt32(0);
-
-            if (accountDeleted > 0)
+            try
             {
-                SqlCommand delTrans = new SqlCommand("DELETE FROM Transactions WHERE AccountID = @accountDeleted", conn);
+                int accountDeleted = (Int32)selAccID.ExecuteScalar();
 
-                delTrans.Parameters.Add("@accountDeleted", System.Data.SqlDbType.Int);
-                delTrans.Parameters["@accountDeleted"].Value = accNo;
-                conn.Open();
+                if (accountDeleted > 0)
+                {
+                    SqlCommand delTrans = new SqlCommand("DELETE FROM Transactions WHERE AccountID=@accountDeleted", conn);
 
-                Console.WriteLine("Slettet");
+                    delTrans.Parameters.Add("@accountDeleted", System.Data.SqlDbType.Int);
+                    delTrans.Parameters["@accountDeleted"].Value = accountDeleted;
+                    delTrans.ExecuteNonQuery();
 
+                    SqlCommand delAcc = new SqlCommand("DELETE FROM Accounts WHERE AccountID=@accountDeleted", conn);
+
+                    delAcc.Parameters.Add("@accountDeleted", System.Data.SqlDbType.Int);
+                    delAcc.Parameters["@accountDeleted"].Value = accountDeleted;
+                    delAcc.ExecuteNonQuery();
+
+                    Console.WriteLine("Kontonummer {0} blev slettet", accNo);
+                }
             }
-            else
+            catch
             {
-                Console.WriteLine("Ikke fundet");
-
-            }
-            reader.Close();
+                Console.WriteLine("Konto ikke fundet");
+            }                                
             conn.Close();
         }
     }

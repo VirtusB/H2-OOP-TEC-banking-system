@@ -35,6 +35,7 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine("\t5) Vis konti");
                 Console.WriteLine("\t6) Slet konto fra kunde");
                 Console.WriteLine("\t7) Vis transaktioner");
+                Console.WriteLine("\t8) Opret transaktion");
                 Console.Write("Indtast valgmulighed (0 for at afslutte): ");              
                 string strSelection = Console.ReadLine();
                 int iSel;
@@ -107,6 +108,10 @@ namespace ConnectToSqlWithCSharp
                         Console.WriteLine("\nIndtast kontonr. for den ønskede konto");
                         Console.WriteLine("Tryk ENTER for at se alle transaktioner for alle konti");
                         transaction.ShowTransactions();
+                        break;
+                    case 8:
+                        Console.Clear();
+                        transaction.AddTransaction();
                         break;
                     default:
                         Console.WriteLine("Forkert, vælg en korrekt mulighed: {0}\r\n", iSel);
