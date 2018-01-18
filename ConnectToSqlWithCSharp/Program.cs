@@ -13,12 +13,32 @@ namespace ConnectToSqlWithCSharp
     static class Program
     {
         public static string linjeFormat = "──────────────────────────────────────────────────────────────────────────────────────";
-        public static string Navn = "Virtus"; // navn til SQL connection metode i 'VoresServere' klassen 
+        public static string Navn; // navn til SQL connection metode i 'VoresServere' klassen 
 
         static void Main(string[] args)
-        {                       
-            Console.OutputEncoding = System.Text.Encoding.UTF8; 
-
+        {   
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+#region Select server
+            Console.WriteLine(@"Please enter the number of which users server you are using, to make connectionstring correct.
+                                1: Virtus
+                                2: Bjarke
+                                3: Morten");
+            string navnInput = Console.ReadLine();
+            switch (navnInput)
+            {
+                case "1":
+                    Navn = "Virtus";
+                    break;
+                case "2":
+                    Navn = "Bjarke";
+                    break;
+                case "3":
+                    Navn = "Morten";
+                    break;
+                default:
+                    throw new NotImplementedException("You should type a number matching one of the three users, and press enter.");
+            }
+#endregion
             Customer customer = new Customer();
             Account account = new Account();
             Transaction transaction = new Transaction();
