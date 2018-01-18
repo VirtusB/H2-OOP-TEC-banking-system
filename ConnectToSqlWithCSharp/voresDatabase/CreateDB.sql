@@ -46,7 +46,7 @@ VALUES	('Opsparing', 0.027),
 		('Pensionskonto', 0.04), 
 		('Børneopsparing', 0.05), 
 		('BudgetKonto', 0.01)
-		('Børnekonto', 0,008)
+		('Børnekonto', 0.008)
 		
 INSERT INTO ACcountTypes (AccountTypeName)
 VALUES	('Lånekonto'),
