@@ -48,7 +48,7 @@ VALUES	('Opsparing', 0.027),
 		('BudgetKonto', 0.01)
 		
 INSERT INTO ACcountTypes (AccountTypeName)
-VALUES	('Lån'),
+VALUES	('Lånekonto'),
 		('Lønkonto')
 
 Create Table Accounts (
