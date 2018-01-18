@@ -184,8 +184,7 @@ namespace ConnectToSqlWithCSharp
             {
 
                 WriteLine("Kunde {0}:\n", i+1);
-                //Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname); 
-                Console.WriteLine("{0, -16} {1} {2,20} ", "Fornavn: ", listOfCustomers[i].firstname, "|"); 
+                Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname);                              
                 Console.WriteLine("Efternavn: \t {0}", listOfCustomers[i].lastname);
                 Console.WriteLine("Adresse: \t {0}", listOfCustomers[i].address);
                 Console.WriteLine("By: \t\t {0}", listOfCustomers[i].city);
