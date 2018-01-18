@@ -15,7 +15,6 @@ namespace ConnectToSqlWithCSharp
         private double amount;
         private int transactiontypeid;
 
-
         #region getters & setters
         public int TransactionID
         {
@@ -77,26 +76,18 @@ namespace ConnectToSqlWithCSharp
             }
         }
         #endregion
-
-
-
-
+  
         public void ShowTransactions()
         {
 
-            
-
-            string showTransactionChoice = Console.ReadLine();
-
-
+            //TODO tekst formattering
+        
+            string showTransactionChoice = Console.ReadLine(); // hvis input er et kontonummer, vis tilhørende transaktioner; ellers vis alle transaktioner i databasen
 
             if (int.TryParse(showTransactionChoice, out int showSpecificTransaction))
             {
 
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn);
-
-
-
 
                 SqlCommand cmd = new SqlCommand("SELECT Transactions.TransactionID, Accounts.AccountNo, Transactions.Created, Transactions.Amount, TransactionTypes.TransactionName FROM Transactions JOIN Accounts ON Accounts.AccountID = Transactions.AccountId JOIN TransactionTypes ON Transactions.TransactionTypeId = TransactionTypes.TransactionTypeID WHERE AccountNO=@showSpecificTransaction", conn); // lav en SQL kommando
                 cmd.Parameters.Add("@showSpecificTransaction", System.Data.SqlDbType.Int);
@@ -107,7 +98,7 @@ namespace ConnectToSqlWithCSharp
 
                 while (reader.Read())
                 {
-                    Console.WriteLine("AccountID: \t\t{0}\nKontonummer: \t\t{1}\nOprettelsesdato: \t{2}\nBeløb: \t\t\t{3}\nType: \t\t\t{4}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4)); //udskriv resultaterne
+                    Console.WriteLine("\nAccountID: \t\t{0}\nKontonummer: \t\t{1}\nOprettelsesdato: \t{2}\nBeløb: \t\t\t{3:C}\nType: \t\t\t{4}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4)); //udskriv resultaterne
                 }
 
                 reader.Close();
@@ -117,22 +108,18 @@ namespace ConnectToSqlWithCSharp
             {
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
-
                 conn.Open(); // åben forbindelsen
                 SqlCommand cmd = new SqlCommand("SELECT Transactions.TransactionID, Accounts.AccountNo, Transactions.Created, Transactions.Amount, TransactionTypes.TransactionName FROM Transactions JOIN Accounts ON Accounts.AccountID = Transactions.AccountId JOIN TransactionTypes ON Transactions.TransactionTypeId = TransactionTypes.TransactionTypeID", conn); // lav en SQL kommando
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    Console.WriteLine("AccountID: \t\t{0}\nKontonummer: \t\t{1}\nOprettelsesdato: \t{2}\nBeløb: \t\t\t{3}\nType: \t\t\t{4}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4)); //udskriv resultaterne
+                    Console.WriteLine("AccountID: \t\t{0}\nKontonummer: \t\t{1}\nOprettelsesdato: \t{2}\nBeløb: \t\t\t{3:C}\nType: \t\t\t{4}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4)); //udskriv resultaterne
                 }
 
                 reader.Close();
                 conn.Close();
             }
         }
-
-
-
     }
 }

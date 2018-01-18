@@ -5,30 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Diagnostics;
-
+using static System.Console;
 
 
 namespace ConnectToSqlWithCSharp
 {
     static class Program
     {
-        public static string Navn = "Virtus";
+        public static string linjeFormat = "──────────────────────────────────────────────────────────────────────────────────────";
+        public static string Navn = "Virtus"; // navn til SQL connection metode i 'VoresServere' klassen 
 
         static void Main(string[] args)
-        {
-            //NU HAR JEG ÆNDRET I FILEN
-            //fdhfhdsffdsf
+        {                       
+            Console.OutputEncoding = System.Text.Encoding.UTF8; 
 
             Customer customer = new Customer();
             Account account = new Account();
             Transaction transaction = new Transaction();
 
-
             // Menu start
             bool done = false;
             do
-            {
-                
+            {               
                 Console.WriteLine("Vælg en mulighed:");
                 Console.WriteLine("\t1) Vis kunde");
                 Console.WriteLine("\t2) Tilføj kunde");
@@ -37,7 +35,7 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine("\t5) Vis konti");
                 Console.WriteLine("\t6) Slet konto fra kunde");
                 Console.WriteLine("\t7) Vis transaktioner");
-                Console.Write("Indtast valgmulighed (0 for at afslutte): ");
+                Console.Write("Indtast valgmulighed (0 for at afslutte): ");              
                 string strSelection = Console.ReadLine();
                 int iSel;
                 try
@@ -58,8 +56,9 @@ namespace ConnectToSqlWithCSharp
                         break;
                     case 1:
                         Console.Clear();
-                        Console.WriteLine("Vis kunde");
-                        
+                        Console.WriteLine("Kundeoversigt");
+                        WriteLine(linjeFormat + "\n\n");         
+                        customer.ShowCustomer();
                         break;
                     case 2:
                         Console.Clear();
@@ -70,7 +69,6 @@ namespace ConnectToSqlWithCSharp
 
                         Console.Write("\nIndtast efternavn: ");
                         customer.LastName = Console.ReadLine();
-
 
                         Console.Write("\n Adresse: ");
                         customer.Address = Console.ReadLine();
@@ -87,8 +85,7 @@ namespace ConnectToSqlWithCSharp
                         Console.Clear();
                         Console.WriteLine("Slet en kunde");
                         Console.Write("Indtast customer ID: ");
-                        customer.CustomerID = Convert.ToInt32(Console.ReadLine());
-
+                        customer.CustomerID = Convert.ToInt32(Console.ReadLine());      
                         customer.DeleteCustomer();
                         break;
                     case 4:
@@ -117,17 +114,9 @@ namespace ConnectToSqlWithCSharp
                 }
                 Console.WriteLine();
             } while (!done);
-
             Console.WriteLine("\nFarvel!");
         }
         // Menu slut
-
-
-       
-
-    
         }
-
-        
     }
 

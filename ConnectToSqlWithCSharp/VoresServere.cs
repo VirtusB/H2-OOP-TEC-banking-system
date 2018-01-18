@@ -20,10 +20,10 @@ namespace ConnectToSqlWithCSharp
                 "Integrated Security=SSPI;";
             } else if (Navn == "Bjarke")
             {
-
+                // Bjarke connection string
             } else if (Navn == "Morten")
             {
-
+                // Morten connection string
             }
             return conn;
         }
