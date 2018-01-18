@@ -121,4 +121,9 @@ FROM Transactions
 JOIN Accounts ON Accounts.AccountID = Transactions.AccountId
 JOIN TransactionTypes ON Transactions.TransactionTypeId = TransactionTypes.TransactionTypeID
 WHERE AccountNO = 4250
+
+SELECT AccountID, Accounts.CustomerId, Accounts.Created, AccountNo, Accounts.AccountTypeId, Saldo, Accounts.Active FROM Accounts 
+INNER JOIN AccountTypes ON accounts.AccountTypeId = accounttypes.AccountTypeID
+INNER JOIN customers ON accounts.customerid = Customers.CustomerID
+WHERE CONCAT(firstname, ' ',lastname) like '%%'
 */
