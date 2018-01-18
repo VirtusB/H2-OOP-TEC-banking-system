@@ -20,7 +20,10 @@ namespace ConnectToSqlWithCSharp
                 "Integrated Security=SSPI;";
             } else if (Navn == "Bjarke")
             {
-                // Bjarke connection string
+                conn.ConnectionString =
+                "Data Source=EU300632;" +
+                "Initial Catalog=H2_OOP_TEC_Banking_System;" +
+                "Integrated Security=SSPI;";
             } else if (Navn == "Morten")
             {
                 // Morten connection string

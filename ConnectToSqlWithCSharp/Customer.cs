@@ -133,86 +133,186 @@ namespace ConnectToSqlWithCSharp
 
         public void ShowCustomer()
         {
+
+            Console.WriteLine("Indtast navn for at se en specifik kunde");
+            Console.WriteLine("Tryk ENTER for at se en komplet kundeoversigt");
+
+            string showCustomerChoice = Console.ReadLine();
+
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
-            var listOfCustomers = new List<Customer>();
-            var listOfAccounts = new List<Account>();
-            var customerAccounts = new List<Account>();
-            SqlCommand customerCmd = new SqlCommand("SELECT * FROM Customers", conn);
-            SqlCommand accountCmd = new SqlCommand("SELECT * FROM Accounts INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId", conn);
-            conn.Open();
-            SqlDataReader reader = customerCmd.ExecuteReader();
-            
-            while (reader.Read())
-            {
 
-                listOfCustomers.Add(new Customer
-                {
-                    CustomerID = reader.GetInt32(0),
-                    Created = reader.GetDateTime(1),
-                    FirstName = reader.GetString(2),
-                    LastName = reader.GetString(3),
-                    Address = reader.GetString(4),
-                    City = reader.GetString(5),
-                    PostalCode = reader.GetInt32(6),
-                    Active = reader.GetBoolean(7)
-                });
+            var listOfCustomers = new List<Customer>(); // liste af kunder
+            var listOfAccounts = new List<Account>(); // liste af konti
+            var customerAccounts = new List<Account>(); // liste af konti som tilhører den pågældende kunde
 
-            }
-
-            reader.Close(); // luk reader brugt til Customers
-
-            SqlDataReader accountReader = accountCmd.ExecuteReader();
-
-            while (accountReader.Read())
-            {
-                listOfAccounts.Add(new Account
-                {
-                    AccountID = accountReader.GetInt32(0),
-                    CustomerID = accountReader.GetInt32(1),
-                    Created = accountReader.GetDateTime(2),
-                    AccountNo = accountReader.GetInt32(3),
-                    AccountTypeID = accountReader.GetInt32(4),
-                    Saldo = accountReader.GetDouble(5),
-                    Active = accountReader.GetBoolean(6),
-                    AccountTypeName = accountReader.GetString(8),
-                    InterestRate = accountReader.GetDouble(9)
-                });
-
-            }
-           
-            for (int i = 0; i < listOfCustomers.Count(); i++)
-            {
-
-                WriteLine("Kunde {0}:\n", i+1);
-                Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname);                              
-                Console.WriteLine("Efternavn: \t {0}", listOfCustomers[i].lastname);
-                Console.WriteLine("Adresse: \t {0}", listOfCustomers[i].address);
-                Console.WriteLine("By: \t\t {0}", listOfCustomers[i].city);
-                Console.WriteLine("Postnr: \t {0}", listOfCustomers[i].postalcode);
-                Console.WriteLine("Oprettet: \t {0}", listOfCustomers[i].created.ToString("MMMM dd, yyyy").ToUpper() );
-                Console.WriteLine("Aktiv: \t\t {0}", listOfCustomers[i].active ? "Ja" : "Nej");
+            if (showCustomerChoice == "")
+            {                
                 
-                customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
+                SqlCommand customerCmd = new SqlCommand("SELECT * FROM Customers", conn);
+                SqlCommand accountCmd = new SqlCommand("SELECT * FROM Accounts INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId", conn);
+                conn.Open();
+                SqlDataReader reader = customerCmd.ExecuteReader();
 
-                Console.WriteLine("\nKonti tilhørende {0} {1}: \n", listOfCustomers[i].firstname, listOfCustomers[i].lastname);
-                for (int x = 0; x < customerAccounts.Count(); x++)
+                while (reader.Read())
                 {
-                    WriteLine("\nKonto {0}:\n", x+1);
-                    //Console.WriteLine("AccountID: \t {0}", customerAccounts[x].AccountID); Ligegyldigt?
-                    //Console.WriteLine("CustomerID: \t {0}", customerAccounts[x].CustomerID); Ligegyldigt?
-                    Console.WriteLine("Oprettet: \t {0}", customerAccounts[x].Created.ToString("MMMM dd, yyyy").ToUpper());
-                    Console.WriteLine("Kontonummer: \t {0}", customerAccounts[x].AccountNo);
-                    Console.WriteLine("Kontotype: \t {0}", customerAccounts[x].AccountTypeName);
-                    Console.WriteLine("Saldo: \t\t {0:C}", customerAccounts[x].Saldo);
-                    Console.WriteLine("Aktiv: \t\t {0}", customerAccounts[x].Active ? "Ja" : "Nej");
-                    Console.WriteLine("Rentesats: \t {0:P}", customerAccounts[x].InterestRate);
+
+                    listOfCustomers.Add(new Customer
+                    {
+                        CustomerID = reader.GetInt32(0),
+                        Created = reader.GetDateTime(1),
+                        FirstName = reader.GetString(2),
+                        LastName = reader.GetString(3),
+                        Address = reader.GetString(4),
+                        City = reader.GetString(5),
+                        PostalCode = reader.GetInt32(6),
+                        Active = reader.GetBoolean(7)
+                    });
+
                 }
-                Console.WriteLine("\n");
-                WriteLine(Program.linjeFormat);
-                Console.WriteLine("\n");
+
+                reader.Close(); // luk reader brugt til Customers
+
+                SqlDataReader accountReader = accountCmd.ExecuteReader();
+
+                while (accountReader.Read())
+                {
+                    listOfAccounts.Add(new Account
+                    {
+                        AccountID = accountReader.GetInt32(0),
+                        CustomerID = accountReader.GetInt32(1),
+                        Created = accountReader.GetDateTime(2),
+                        AccountNo = accountReader.GetInt32(3),
+                        AccountTypeID = accountReader.GetInt32(4),
+                        Saldo = accountReader.GetDouble(5),
+                        Active = accountReader.GetBoolean(6),
+                        AccountTypeName = accountReader.GetString(8),
+                        InterestRate = accountReader.GetDouble(9)
+                    });
+
+                }
+
+                for (int i = 0; i < listOfCustomers.Count(); i++)
+                {
+
+                    WriteLine("Kunde {0}:\n", i + 1);
+                    Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname);
+                    Console.WriteLine("Efternavn: \t {0}", listOfCustomers[i].lastname);
+                    Console.WriteLine("Adresse: \t {0}", listOfCustomers[i].address);
+                    Console.WriteLine("By: \t\t {0}", listOfCustomers[i].city);
+                    Console.WriteLine("Postnr: \t {0}", listOfCustomers[i].postalcode);
+                    Console.WriteLine("Oprettet: \t {0}", listOfCustomers[i].created.ToString("MMMM dd, yyyy").ToUpper());
+                    Console.WriteLine("Aktiv: \t\t {0}", listOfCustomers[i].active ? "Ja" : "Nej");
+
+                    customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
+
+                    Console.WriteLine("\nKonti tilhørende {0} {1}: \n", listOfCustomers[i].firstname, listOfCustomers[i].lastname);
+                    for (int x = 0; x < customerAccounts.Count(); x++)
+                    {
+                        WriteLine("\nKonto {0}:\n", x + 1);
+                        //Console.WriteLine("AccountID: \t {0}", customerAccounts[x].AccountID); Ligegyldigt?
+                        //Console.WriteLine("CustomerID: \t {0}", customerAccounts[x].CustomerID); Ligegyldigt?
+                        Console.WriteLine("Oprettet: \t {0}", customerAccounts[x].Created.ToString("MMMM dd, yyyy").ToUpper());
+                        Console.WriteLine("Kontonummer: \t {0}", customerAccounts[x].AccountNo);
+                        Console.WriteLine("Kontotype: \t {0}", customerAccounts[x].AccountTypeName);
+                        Console.WriteLine("Saldo: \t\t {0:C}", customerAccounts[x].Saldo);
+                        Console.WriteLine("Aktiv: \t\t {0}", customerAccounts[x].Active ? "Ja" : "Nej");
+                        Console.WriteLine("Rentesats: \t {0:P}", customerAccounts[x].InterestRate);
+                    }
+                    Console.WriteLine("\n");
+                    WriteLine(Program.linjeFormat);
+                    Console.WriteLine("\n");
+                }
+                accountReader.Close();
+                conn.Close();
+            } else
+            {
+
+                SqlCommand customerCmd = new SqlCommand("SELECT * FROM Customers WHERE CONCAT(firstname,' ',lastname) LIKE '%@showCustomerChoice%'", conn);
+                SqlCommand accountCmd = new SqlCommand("SELECT AccountID, Accounts.CustomerId, Accounts.Created, AccountNo, Accounts.AccountTypeId, Saldo, Accounts.Active, AccountTypes.AccountTypeID, AccountTypeName, Interestrate FROM Accounts INNER JOIN AccountTypes ON accounts.AccountTypeId = accounttypes.AccountTypeID INNER JOIN customers ON accounts.customerid = Customers.CustomerID WHERE CONCAT(firstname, ' ',lastname) like '%@showCustomerChoice%'", conn);          
+
+                customerCmd.Parameters.Add("@showCustomerChoice", System.Data.SqlDbType.NVarChar); // tilføj parameter til vores SQL string
+                customerCmd.Parameters["@showCustomerChoice"].Value = showCustomerChoice;
+
+                accountCmd.Parameters.Add("@showCustomerChoice", System.Data.SqlDbType.NVarChar); // tilføj parameter til vores SQL string
+                accountCmd.Parameters["@showCustomerChoice"].Value = showCustomerChoice;
+
+                conn.Open();
+                SqlDataReader reader = customerCmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+
+                    listOfCustomers.Add(new Customer
+                    {
+                        CustomerID = reader.GetInt32(0),
+                        Created = reader.GetDateTime(1),
+                        FirstName = reader.GetString(2),
+                        LastName = reader.GetString(3),
+                        Address = reader.GetString(4),
+                        City = reader.GetString(5),
+                        PostalCode = reader.GetInt32(6),
+                        Active = reader.GetBoolean(7)
+                    });
+
+                }
+
+                reader.Close(); // luk reader brugt til Customers
+
+                SqlDataReader accountReader = accountCmd.ExecuteReader();
+
+                while (accountReader.Read())
+                {
+                    listOfAccounts.Add(new Account
+                    {
+                        AccountID = accountReader.GetInt32(0),
+                        CustomerID = accountReader.GetInt32(1),
+                        Created = accountReader.GetDateTime(2),
+                        AccountNo = accountReader.GetInt32(3),
+                        AccountTypeID = accountReader.GetInt32(4),
+                        Saldo = accountReader.GetDouble(5),
+                        Active = accountReader.GetBoolean(6),
+                        AccountTypeName = accountReader.GetString(8),
+                        InterestRate = accountReader.GetDouble(9)
+                    });
+
+                }
+
+                for (int i = 0; i < listOfCustomers.Count(); i++)
+                {
+
+                    WriteLine("Kunde {0}:\n", i + 1);
+                    Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname);
+                    Console.WriteLine("Efternavn: \t {0}", listOfCustomers[i].lastname);
+                    Console.WriteLine("Adresse: \t {0}", listOfCustomers[i].address);
+                    Console.WriteLine("By: \t\t {0}", listOfCustomers[i].city);
+                    Console.WriteLine("Postnr: \t {0}", listOfCustomers[i].postalcode);
+                    Console.WriteLine("Oprettet: \t {0}", listOfCustomers[i].created.ToString("MMMM dd, yyyy").ToUpper());
+                    Console.WriteLine("Aktiv: \t\t {0}", listOfCustomers[i].active ? "Ja" : "Nej");
+
+                    customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
+
+                    Console.WriteLine("\nKonti tilhørende {0} {1}: \n", listOfCustomers[i].firstname, listOfCustomers[i].lastname);
+                    for (int x = 0; x < customerAccounts.Count(); x++)
+                    {
+                        WriteLine("\nKonto {0}:\n", x + 1);
+                        //Console.WriteLine("AccountID: \t {0}", customerAccounts[x].AccountID); Ligegyldigt?
+                        //Console.WriteLine("CustomerID: \t {0}", customerAccounts[x].CustomerID); Ligegyldigt?
+                        Console.WriteLine("Oprettet: \t {0}", customerAccounts[x].Created.ToString("MMMM dd, yyyy").ToUpper());
+                        Console.WriteLine("Kontonummer: \t {0}", customerAccounts[x].AccountNo);
+                        Console.WriteLine("Kontotype: \t {0}", customerAccounts[x].AccountTypeName);
+                        Console.WriteLine("Saldo: \t\t {0:C}", customerAccounts[x].Saldo);
+                        Console.WriteLine("Aktiv: \t\t {0}", customerAccounts[x].Active ? "Ja" : "Nej");
+                        Console.WriteLine("Rentesats: \t {0:P}", customerAccounts[x].InterestRate);
+                    }
+                    Console.WriteLine("\n");
+                    WriteLine(Program.linjeFormat);
+                    Console.WriteLine("\n");
+                }
+                accountReader.Close();
+                conn.Close();
             }
-            accountReader.Close(); 
-            conn.Close();
+
+            
         }
 
         public void AddCustomer()
