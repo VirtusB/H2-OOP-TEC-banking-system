@@ -167,7 +167,7 @@ namespace ConnectToSqlWithCSharp
                     updateSaldoCmd.Parameters["@accNo"].Value = accNo;
 
                     // opret transaktion i databasen
-                    SqlCommand addTransactionDB = new SqlCommand("INSERT INTO Transactions (AccountId, amount, TransactionTypeId) VALUES (@accountId, @amountWithdraw, 1)", conn);
+                    SqlCommand addTransactionDB = new SqlCommand("INSERT INTO Transactions (AccountId, amount, TransactionTypeId) VALUES (@accountId, -@amountWithdraw, 1)", conn);
 
                     addTransactionDB.Parameters.Add("@accountId", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
                     addTransactionDB.Parameters["@accountId"].Value = accountId;
@@ -253,19 +253,14 @@ namespace ConnectToSqlWithCSharp
                     Console.WriteLine(Program.linjeFormat);
                 } else
                 {
-                    WriteLine("Forkert valg");
+                    //throw new Exception("fejl forkert...");
+                    WriteLine("Forkert valg");                 
                 }
-
-
             }
-
-
-            catch
-            {
-                Console.WriteLine("\nFejl");
-            }
-
-            
+            catch(Exception e)
+            {              
+                Console.WriteLine("\nFejl " + e.Message);
+            }          
         }
     }
 }

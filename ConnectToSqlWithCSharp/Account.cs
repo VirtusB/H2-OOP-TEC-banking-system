@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ConnectToSqlWithCSharp;
-
+using static System.Console;
 
 namespace ConnectToSqlWithCSharp
 {
@@ -144,7 +144,7 @@ namespace ConnectToSqlWithCSharp
             
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn); // sæt connection string
 
-                SqlCommand cmd = new SqlCommand("SELECT AccountID, CustomerId, Created, AccountNo, AccountTypeName, Saldo, case when Active = 1 THEN 'Ja' When Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId WHERE AccountNo=@showSpecificAccount", conn); // lav en SQL kommando
+                SqlCommand cmd = new SqlCommand("SELECT AccountID, CONCAT(firstname,' ', lastname) as CustomerId, Accounts.Created, AccountNo, AccountTypeName, Saldo, case when Accounts.Active = 1 THEN 'Ja' When Accounts.Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId INNER JOIN customers ON accounts.customerid = customers.customerid WHERE AccountNo=@showSpecificAccount", conn); // lav en SQL kommando
                 cmd.Parameters.Add("@showSpecificAccount", System.Data.SqlDbType.Int);
                 cmd.Parameters["@showSpecificAccount"].Value = showSpecificAccount;
                 conn.Open(); // åben forbindelsen
@@ -153,7 +153,7 @@ namespace ConnectToSqlWithCSharp
 
                 while (reader.Read())
                 {
-                    Console.WriteLine("\nAccountID: \t\t{0}\nCustomerId: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
+                    Console.WriteLine("\nAccountID: \t\t{0}\nKontoens ejer: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
                 }
 
                 reader.Close();
@@ -164,23 +164,77 @@ namespace ConnectToSqlWithCSharp
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
                 conn.Open(); // åben forbindelsen
-                SqlCommand cmd = new SqlCommand("SELECT AccountID, CustomerId, Created, AccountNo, AccountTypeName, Saldo, case when Active = 1 THEN 'Ja' When Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId", conn); // lav en SQL kommando
+                SqlCommand cmd = new SqlCommand("SELECT AccountID, CONCAT(firstname,' ',lastname) as CustomerId, Accounts.Created, AccountNo, AccountTypeName, Saldo, case when Accounts.Active = 1 THEN 'Ja' When Accounts.Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId INNER JOIN customers ON accounts.customerid = customers.customerid", conn); // lav en SQL kommando
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    Console.WriteLine("AccountID: \t\t{0}\nCustomerId: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}\n", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
+                    Console.WriteLine("AccountID: \t\t{0}\nKontoens ejer: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}\n", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
                 }
                 //mangler dato formattering
                 reader.Close();
                 conn.Close();
             }
         }
+
+        public void AddAccount()
+        {
+            Write("\nIndtast kunde nummer, som du vil oprette en konto for: ");
+            int custID = Convert.ToInt32(Console.ReadLine());
+
+            SqlConnection conn = VoresServere.WhichServer(Program.Navn);
+
+            Write("\nIndtast den kontotype du vil oprette: \n");
+
+            // udskriv alle kontotyper
+            SqlCommand selAccTypes = new SqlCommand("SELECT AccountTypeName FROM AccountTypes", conn);
+            conn.Open();
+            SqlDataReader reader = selAccTypes.ExecuteReader();
+            
+
+            while (reader.Read())
+            {
+                Console.WriteLine(reader.GetString(0)); //udskriv resultaterne
+            }
+            
+            reader.Close();
+
+
+            Write("\nIndtastning: ");
+            string accTypeSelection = Console.ReadLine().ToLower();
+
+            SqlCommand selAccType = new SqlCommand("SELECT AccountTypeID FROM AccountTypes WHERE AccountTypeName=@accTypeSelection", conn);
+            selAccType.Parameters.Add("@accTypeSelection", System.Data.SqlDbType.NVarChar); // tilføj parameter til vores SQL string
+            selAccType.Parameters["@accTypeSelection"].Value = accTypeSelection;
+            int accTypeID = (int)selAccType.ExecuteScalar();
+
+            SqlCommand selAccMax = new SqlCommand("SELECT TOP (1) AccountNo FROM Accounts ORDER BY AccountNo DESC", conn);
+            int accMax = (int)selAccMax.ExecuteScalar() + 1;
+
+
+            SqlCommand addAccCMD = new SqlCommand("INSERT INTO Accounts (CustomerID, AccountNo, AccountTypeId) VALUES (@custID, @accMax, @accTypeID)", conn);
+            addAccCMD.Parameters.Add("@custID", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
+            addAccCMD.Parameters["@custID"].Value = custID;
+
+            addAccCMD.Parameters.Add("@accTypeID", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
+            addAccCMD.Parameters["@accTypeID"].Value = accTypeID;
+
+            addAccCMD.Parameters.Add("@accMax", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
+            addAccCMD.Parameters["@accMax"].Value = accMax;
+
+            addAccCMD.ExecuteNonQuery();
+
+            Console.WriteLine("Du har oprettet en {0}, med kontonummer {1}", accTypeSelection, accMax);
+
+            conn.Close();
+
+
+
+        }
         
         public void DeleteAccount()
         {
-            Console.Write("Indtast kontonr: ");
-            int accNo = Convert.ToInt32(Console.ReadLine());
+            
 
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
@@ -191,10 +245,11 @@ namespace ConnectToSqlWithCSharp
             SqlCommand selAccID = new SqlCommand("SELECT AccountID FROM Accounts WHERE AccountNo=@accNo", conn);
 
             selAccID.Parameters.Add("@accNo", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
-            selAccID.Parameters["@accNo"].Value = accNo;
+            selAccID.Parameters["@accNo"].Value = accountno;
             conn.Open();
             try
             {
+                
                 int accountDeleted = (Int32)selAccID.ExecuteScalar();
 
                 if (accountDeleted > 0)
@@ -211,7 +266,7 @@ namespace ConnectToSqlWithCSharp
                     delAcc.Parameters["@accountDeleted"].Value = accountDeleted;
                     delAcc.ExecuteNonQuery();
 
-                    Console.WriteLine("Kontonummer {0} blev slettet", accNo);
+                    Console.WriteLine("Kontonummer {0} blev slettet", accountno);
                 }
             }
             catch
