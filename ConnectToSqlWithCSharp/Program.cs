@@ -126,6 +126,8 @@ namespace ConnectToSqlWithCSharp
                         break;
                     case 7:
                         Console.Clear();
+                        Console.Write("Indtast kontonr: ");                      
+                        account.AccountNo = Convert.ToInt32(Console.ReadLine());
                         account.DeleteAccount();
                         break;
                     case 8:

@@ -234,8 +234,7 @@ namespace ConnectToSqlWithCSharp
         
         public void DeleteAccount()
         {
-            Console.Write("Indtast kontonr: ");
-            int accNo = Convert.ToInt32(Console.ReadLine());
+            
 
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
@@ -246,10 +245,11 @@ namespace ConnectToSqlWithCSharp
             SqlCommand selAccID = new SqlCommand("SELECT AccountID FROM Accounts WHERE AccountNo=@accNo", conn);
 
             selAccID.Parameters.Add("@accNo", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
-            selAccID.Parameters["@accNo"].Value = accNo;
+            selAccID.Parameters["@accNo"].Value = accountno;
             conn.Open();
             try
             {
+                
                 int accountDeleted = (Int32)selAccID.ExecuteScalar();
 
                 if (accountDeleted > 0)
@@ -266,7 +266,7 @@ namespace ConnectToSqlWithCSharp
                     delAcc.Parameters["@accountDeleted"].Value = accountDeleted;
                     delAcc.ExecuteNonQuery();
 
-                    Console.WriteLine("Kontonummer {0} blev slettet", accNo);
+                    Console.WriteLine("Kontonummer {0} blev slettet", accountno);
                 }
             }
             catch

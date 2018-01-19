@@ -419,32 +419,25 @@ namespace ConnectToSqlWithCSharp
         }
 
         public void DeleteCustomer()
-        {
+        {       
+            
+            // slet transactions, konti og kunden ud fra customer.customerid
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
-            SqlCommand cmd = new SqlCommand("DELETE FROM Customers WHERE CustomerID=@cID", conn);
-            cmd.Parameters.Add("@cID", System.Data.SqlDbType.Int);
-            cmd.Parameters["@cID"].Value = customerid;
+            SqlCommand delCust = new SqlCommand("SELECT CustomerID FROM Customers WHERE CustomerID=@cID", conn);
+            delCust.Parameters.Add("@cID", System.Data.SqlDbType.Int);
+            delCust.Parameters["@cID"].Value = customerid;
+
+            
+
+
             conn.Open();
 
-            int customerSlettet = cmd.ExecuteNonQuery();
-            if (customerSlettet > 0)
-            {
-                Console.WriteLine("Slettet");
-            }
-            else
-            {
-                Console.WriteLine("Ikke fundet");
-            }
+            int custDeletion = (int)delCust.ExecuteScalar();
 
+            
+            
 
-            try
-            {
-                
-            }
-            catch
-            {
-
-            }
+           
 
 
             conn.Close();

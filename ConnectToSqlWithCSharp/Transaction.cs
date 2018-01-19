@@ -253,19 +253,14 @@ namespace ConnectToSqlWithCSharp
                     Console.WriteLine(Program.linjeFormat);
                 } else
                 {
-                    WriteLine("Forkert valg");
+                    //throw new Exception("fejl forkert...");
+                    WriteLine("Forkert valg");                 
                 }
-
-
             }
-
-
-            catch
-            {
-                Console.WriteLine("\nFejl");
-            }
-
-            
+            catch(Exception e)
+            {              
+                Console.WriteLine("\nFejl " + e.Message);
+            }          
         }
     }
 }
