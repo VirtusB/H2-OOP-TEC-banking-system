@@ -10,54 +10,79 @@ using static System.Console;
 
 namespace ConnectToSqlWithCSharp
 {
-    static class Program
+    public static class Program
     {
+
+
+
         public static string linjeFormat = "──────────────────────────────────────────────────────────────────────────────────────";
         public static string Navn; // navn til SQL connection metode i 'VoresServere' klassen 
 
-        static void Main(string[] args)
-        {   
+
+        public static void Main()
+        {
+
+
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-#region Select server
+            #region Select server
             Console.WriteLine("Please enter the number of which users server you are using, to make connectionstring correct.\n1: Virtus\n2: Bjarke\n3: Morten");
             string navnInput = Console.ReadLine();
-            switch (navnInput)
+            try
             {
-                case "1":
-                    Navn = "Virtus";
-                    Clear();
-                    break;
-                case "2":
-                    Navn = "Bjarke";
-                    Clear();
-                    break;
-                case "3":
-                    Navn = "Morten";
-                    Clear();
-                    break;
-                default:
-                    throw new NotImplementedException("You should type a number matching one of the three users, and press enter.");
+                switch (navnInput)
+                {
+                    case "1":
+                        Navn = "Virtus";
+                        Clear();
+                        break;
+                    case "2":
+                        Navn = "Bjarke";
+                        Clear();
+                        break;
+                    case "3":
+                        Navn = "Morten";
+                        Clear();
+                        break;
+                    default:
+                        var serverSelErr = String.Join(
+                                         Environment.NewLine,
+                                         "\nIndtast en gyldig " +
+                                         "valgmulighed\n");
+
+                        throw new Exception(serverSelErr);
+
+                }
             }
-#endregion
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message.ToUpper());
+                Main();
+            }
+
+            #endregion
             Customer customer = new Customer();
             Account account = new Account();
             Transaction transaction = new Transaction();
 
+
+
+
+
             // Menu start
             bool done = false;
             do
-            {               
+            {
                 Console.WriteLine("Vælg en mulighed:");
                 Console.WriteLine("\t1) Vis kunde");
                 Console.WriteLine("\t2) Tilføj kunde");
                 Console.WriteLine("\t3) Slet kunde");
-                Console.WriteLine("\t4) Rediger kunde");
+                Console.WriteLine("\t4) Rediger kunde - IKKE IMPLEMENTERET");
                 Console.WriteLine("\t5) Vis konti");
                 Console.WriteLine("\t6) Opret Konto");
                 Console.WriteLine("\t7) Slet konto fra kunde");
                 Console.WriteLine("\t8) Vis transaktioner");
                 Console.WriteLine("\t9) Opret transaktion");
-                Console.Write("Indtast valgmulighed (0 for at afslutte): ");              
+                Console.Write("Indtast valgmulighed (0 for at afslutte): ");
                 string strSelection = Console.ReadLine();
                 int iSel;
                 try
@@ -79,40 +104,91 @@ namespace ConnectToSqlWithCSharp
                     case 1:
                         Console.Clear();
                         Console.WriteLine("Kundeoversigt");
-                        WriteLine(linjeFormat + "\n\n");         
+                        WriteLine(linjeFormat + "\n\n");
                         customer.ShowCustomer();
                         break;
                     case 2:
                         Console.Clear();
-                        Console.WriteLine("Tilføj en kunde");
+                        Console.WriteLine("Tilføj en kunde\n");
 
                         Console.Write("Indtast fornavn: ");
-                        customer.FirstName = Console.ReadLine();
+                        // tjek om fornavn er gyldigt
+                        string CustFName = Console.ReadLine();
+                        if (CustFName.Length >= 2 && !double.TryParse(CustFName, out double tempCustFName) && tempCustFName != 1)
+                        {
+                            customer.FirstName = CustFName;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nUgyldigt fornavn");
+                            break;
+                        }
 
                         Console.Write("\nIndtast efternavn: ");
-                        customer.LastName = Console.ReadLine();
+                        // tjek om efternavn er gyldigt
+                        string CustLName = Console.ReadLine();
+                        if (CustLName.Length >= 2 && !double.TryParse(CustLName, out double tempCustLName) && tempCustLName != 1)
+                        {
+                            customer.LastName = CustLName;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nUgyldigt efternavn");
+                            break;
+                        }
 
-                        Console.Write("\n Adresse: ");
-                        customer.Address = Console.ReadLine();
+                        Console.Write("\nAdresse: ");
+                        // tjek om adresse er gyldig
+                        string CustAddr = Console.ReadLine();
+                        if (CustAddr.Length >= 4 && !double.TryParse(CustAddr, out double tempCustAddr) && tempCustAddr != 1)
+                        {
+                            customer.Address = CustAddr;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nUgyldig adresse");
+                            break;
+                        }
 
-                        Console.Write("\n By: ");
-                        customer.City = Console.ReadLine();
+                        Console.Write("\nBy: ");
+                        // tjek om bynavn er gyldigt
+                        string CustCity = Console.ReadLine();
+                        if (CustCity.Length >= 2 && !double.TryParse(CustCity, out double tempCustCity) && tempCustCity != 1)
+                        {
+                            customer.City = CustCity;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nUgyldigt bynavn");
+                            break;
+                        }
 
-                        Console.Write("\n Postnr: ");
-                        customer.PostalCode = Convert.ToInt32(Console.ReadLine());
-
-                        customer.AddCustomer();
+                        Console.Write("\nPostnr: ");
+                        // tjek om postnummeret er gyldigt
+                        string tempPostalCode = Console.ReadLine();
+                        int postalValid;
+                        int.TryParse(tempPostalCode, out postalValid);
+                        if (postalValid.ToString().Length == 4)
+                        {
+                            customer.PostalCode = postalValid;
+                            customer.AddCustomer();
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nUgyldigt postnummer");
+                            break;
+                        }
                         break;
                     case 3:
                         Console.Clear();
                         Console.WriteLine("Slet en kunde");
                         Console.Write("Indtast customer ID: ");
-                        customer.CustomerID = Convert.ToInt32(Console.ReadLine());      
+                        customer.CustomerID = Convert.ToInt32(Console.ReadLine());
                         customer.DeleteCustomer();
                         break;
                     case 4:
                         Console.Clear();
-                        Console.WriteLine("Rediger en kunde");
+                        Console.WriteLine("Rediger en kunde - IKKE IMPLEMENTERET");
                         break;
                     case 5:
                         Console.Clear();
@@ -122,10 +198,23 @@ namespace ConnectToSqlWithCSharp
                     case 6:
                         Console.Clear();
                         WriteLine("Tilføj en konto til en kunde");
-                        account.AddAccount();
+                        Write("\nIndtast kunde nummer, som du vil oprette en konto for: ");
+                       
+                        string strCustID = Console.ReadLine();
+                        if (int.TryParse(strCustID, out int tempCustID))
+                        {
+                            account.CustomerID = tempCustID;
+                            account.AddAccount();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Indtast et gyldigt kunde nummer");
+                        }                   
                         break;
                     case 7:
                         Console.Clear();
+                        Console.Write("Indtast kontonr: ");
+                        account.AccountNo = Convert.ToInt32(Console.ReadLine());
                         account.DeleteAccount();
                         break;
                     case 8:
@@ -146,8 +235,11 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine();
             } while (!done);
             Console.WriteLine("\nFarvel!");
+
+
+
         }
         // Menu slut
-        }
     }
+}
 

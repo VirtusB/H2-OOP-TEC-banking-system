@@ -45,7 +45,8 @@ INSERT INTO ACcountTypes (AccountTypeName, InterestRate)
 VALUES	('Opsparing', 0.027), 
 		('Pensionskonto', 0.04), 
 		('Børneopsparing', 0.05), 
-		('BudgetKonto', 0.01)
+		('BudgetKonto', 0.01),
+		('Børnekonto', 0.008)
 		
 INSERT INTO ACcountTypes (AccountTypeName)
 VALUES	('Lånekonto'),
@@ -126,4 +127,9 @@ SELECT AccountID, Accounts.CustomerId, Accounts.Created, AccountNo, Accounts.Acc
 INNER JOIN AccountTypes ON accounts.AccountTypeId = accounttypes.AccountTypeID
 INNER JOIN customers ON accounts.customerid = Customers.CustomerID
 WHERE CONCAT(firstname, ' ',lastname) like '%%'
+
+DELETE FROM Transactions
+WHERE AccountID IN(SELECT DISTINCT AccountID FROM Accounts WHERE accounts.CustomerId=2); 
+DELETE FROM Accounts WHERE Accounts.customerId = 2;
+DELETE FROM Customers where CustomerID = 2;
 */
