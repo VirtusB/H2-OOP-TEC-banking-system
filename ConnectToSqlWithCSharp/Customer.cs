@@ -351,6 +351,18 @@ namespace ConnectToSqlWithCSharp
             {
                 Console.WriteLine("Ikke fundet");
             }
+
+
+            try
+            {
+                
+            }
+            catch
+            {
+
+            }
+
+
             conn.Close();
         }
     }
