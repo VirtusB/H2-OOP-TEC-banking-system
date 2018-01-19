@@ -134,7 +134,7 @@ namespace ConnectToSqlWithCSharp
         {
             Console.WriteLine("Indtast navn for at se en specifik kunde");
             Console.WriteLine("Tryk ENTER for at se en komplet kundeoversigt");
-            Console.WriteLine("(Tilføj -knr for at sortere efter konro-nr)");
+            Console.WriteLine("(Tilføj -knr for at sortere efter konto-nr)");
 
             string showCustomerChoice = Console.ReadLine();
             bool showAll = false;
@@ -269,7 +269,7 @@ namespace ConnectToSqlWithCSharp
                         Console.WriteLine("\nFlere kunder blev fundet. " +
                             "\nIndtast kunde-ID eller et mere præcist navn, for at se data om specifik kunde." +
                             "\nTryk enter for at se data om alle kunder fra denne liste." +
-                            "\n(Tilføj -knr for at sortere efter konro-nr)");
+                            "\n(Tilføj -knr for at sortere efter konto-nr)");
 
                         Console.WriteLine("\n");
                         Console.WriteLine("Kunde-ID\tNavn\tAdresse");
@@ -328,9 +328,14 @@ namespace ConnectToSqlWithCSharp
                 else if (listOfCustomers.Count == 1)
                 {
                     stringWithCustomerIds = listOfCustomers[0].CustomerID.ToString();
-                }
+                } else if (listOfCustomers.Count == 0)
+                {
+                    Console.WriteLine("\nIngen kunder fundet");
+                } 
                 else
-                    throw new Exception("WOWOWOWOW");
+                    Console.WriteLine("Ukategoriseret fejl, kontakt systemadministratoren");
+
+               
 
                 accountCmd.Parameters.Add(new SqlParameter("@customerIdSearchMatches", stringWithCustomerIds)); // tilføj parameter til vores SQL string
 
@@ -423,7 +428,9 @@ namespace ConnectToSqlWithCSharp
             
             // slet transactions, konti og kunden ud fra customer.customerid
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
-            SqlCommand delCust = new SqlCommand("SELECT CustomerID FROM Customers WHERE CustomerID=@cID", conn);
+            SqlCommand delCust = new SqlCommand(@"DELETE FROM Transactions WHERE AccountID IN(SELECT DISTINCT AccountID FROM Accounts WHERE accounts.CustomerId=@cID); 
+                                                  DELETE FROM Accounts WHERE Accounts.customerId = @cID;
+                                                  DELETE FROM Customers where CustomerID = @cID;", conn);
             delCust.Parameters.Add("@cID", System.Data.SqlDbType.Int);
             delCust.Parameters["@cID"].Value = customerid;
 
@@ -432,10 +439,10 @@ namespace ConnectToSqlWithCSharp
 
             conn.Open();
 
-            int custDeletion = (int)delCust.ExecuteScalar();
+            int custDeletion = (int)delCust.ExecuteNonQuery();
 
-            
-            
+
+            Console.WriteLine("Du har slettet kunde nummer {0}", customerid);
 
            
 

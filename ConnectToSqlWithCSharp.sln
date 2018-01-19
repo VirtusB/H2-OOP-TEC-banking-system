@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectToSqlWithCSharp", "ConnectToSqlWithCSharp\ConnectToSqlWithCSharp.csproj", "{9C830FB2-2578-4ADC-AE25-2616B44A2806}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "..\..\..\..\Desktop\Testing\Testing.csproj", "{7AC0FDB5-2264-4DF5-9B4B-38498B6715FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{9C830FB2-2578-4ADC-AE25-2616B44A2806}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C830FB2-2578-4ADC-AE25-2616B44A2806}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C830FB2-2578-4ADC-AE25-2616B44A2806}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AC0FDB5-2264-4DF5-9B4B-38498B6715FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AC0FDB5-2264-4DF5-9B4B-38498B6715FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AC0FDB5-2264-4DF5-9B4B-38498B6715FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AC0FDB5-2264-4DF5-9B4B-38498B6715FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

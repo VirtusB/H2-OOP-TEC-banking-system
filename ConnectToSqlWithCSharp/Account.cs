@@ -141,7 +141,7 @@ namespace ConnectToSqlWithCSharp
 
             if (int.TryParse(showAccountsChoice, out int showSpecificAccount)) //hvis showAccountsChoice kan parses til int, vis kontoen tilhørende det indtaste kontonr.
             {
-            
+
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn); // sæt connection string
 
                 SqlCommand cmd = new SqlCommand("SELECT AccountID, CONCAT(firstname,' ', lastname) as CustomerId, Accounts.Created, AccountNo, AccountTypeName, Saldo, case when Accounts.Active = 1 THEN 'Ja' When Accounts.Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId INNER JOIN customers ON accounts.customerid = customers.customerid WHERE AccountNo=@showSpecificAccount", conn); // lav en SQL kommando
@@ -179,16 +179,29 @@ namespace ConnectToSqlWithCSharp
 
         public void AddAccount()
         {
-            Write("\nIndtast kunde nummer, som du vil oprette en konto for: ");
-            int custID = Convert.ToInt32(Console.ReadLine());
-
+         
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
+
+            conn.Open();
+            SqlCommand checkCustID = new SqlCommand("SELECT COUNT(*) FROM Customers WHERE CustomerID = @custCheck", conn);
+            checkCustID.Parameters.Add("@custCheck", System.Data.SqlDbType.NVarChar); // tilføj parameter til vores SQL string
+            checkCustID.Parameters["@custCheck"].Value = customerid;
+
+
+            int checkedCust = (int)checkCustID.ExecuteScalar();
+            if (checkedCust != 1)
+            {            
+                Console.WriteLine("\nKunde eksisterer ikke");
+                return;
+            } else {
+                Console.WriteLine("Konto oprettet");
+            }
+            
 
             Write("\nIndtast den kontotype du vil oprette: \n");
 
             // udskriv alle kontotyper
-            SqlCommand selAccTypes = new SqlCommand("SELECT AccountTypeName FROM AccountTypes", conn);
-            conn.Open();
+            SqlCommand selAccTypes = new SqlCommand("SELECT AccountTypeName FROM AccountTypes", conn);         
             SqlDataReader reader = selAccTypes.ExecuteReader();
             
 
@@ -214,14 +227,14 @@ namespace ConnectToSqlWithCSharp
 
             SqlCommand addAccCMD = new SqlCommand("INSERT INTO Accounts (CustomerID, AccountNo, AccountTypeId) VALUES (@custID, @accMax, @accTypeID)", conn);
             addAccCMD.Parameters.Add("@custID", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
-            addAccCMD.Parameters["@custID"].Value = custID;
+            addAccCMD.Parameters["@custID"].Value = customerid;
 
             addAccCMD.Parameters.Add("@accTypeID", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
             addAccCMD.Parameters["@accTypeID"].Value = accTypeID;
 
             addAccCMD.Parameters.Add("@accMax", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
             addAccCMD.Parameters["@accMax"].Value = accMax;
-
+            
             addAccCMD.ExecuteNonQuery();
 
             Console.WriteLine("Du har oprettet en {0}, med kontonummer {1}", accTypeSelection, accMax);
