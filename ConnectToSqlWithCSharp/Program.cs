@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using static System.Console;
-
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Threading;
 
 namespace ConnectToSqlWithCSharp
 {
@@ -24,6 +26,8 @@ namespace ConnectToSqlWithCSharp
 
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
+            
+
             #region Select server
             Console.WriteLine("Please enter the number of which users server you are using, to make connectionstring correct.\n1: Virtus\n2: Bjarke\n3: Morten");
             string navnInput = Console.ReadLine();
@@ -60,13 +64,39 @@ namespace ConnectToSqlWithCSharp
             }
 
             #endregion
+
+            #region Login
+            User user = new User();
+
+            do
+            {
+                Console.Write("Indtast brugernavn: ");
+                user.Username = Console.ReadLine();              
+            } while (user.UserCheck() != true);
+
+
+            do
+            {          
+                Console.Write("\nIndtast adgangskode: ");
+                user.UserPassword = Console.ReadLine();              
+            } while (user.UserAuth() != true);
+
+            ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nLogger ind ...\n");
+            ResetColor();
+            Thread.Sleep(850);
+            Console.Clear();
+
+            #endregion
+
             Customer customer = new Customer();
             Account account = new Account();
             Transaction transaction = new Transaction();
             AccountType accountType = new AccountType();
+            
 
 
-
+            
 
 
             // Menu start
