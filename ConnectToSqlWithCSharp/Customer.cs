@@ -137,9 +137,10 @@ namespace ConnectToSqlWithCSharp
             Console.WriteLine("(Tilføj -knr for at sortere efter konto-nr)");
 
             string showCustomerChoice = Console.ReadLine();
+            Console.Clear();
             bool showAll = false;
             bool knrSorting = (showCustomerChoice.Contains("-knr"));
-            int currentCustomerId = 0;
+            int accountCounter = 1;
             Customer customerForKnrSorting = new Customer();
 
             showCustomerChoice = showCustomerChoice.Replace("-knr", "");
@@ -206,7 +207,7 @@ namespace ConnectToSqlWithCSharp
                 }
                 else
                 {
-                    listOfCustomers.Sort((x, y) => x.lastname.CompareTo(y.lastname));
+                    listOfCustomers.Sort((x, y) => x.LastName.CompareTo(y.LastName));
                     listOfAccounts.Sort((x, y) => x.AccountNo.CompareTo(y.AccountNo));
                 }
 
@@ -214,25 +215,23 @@ namespace ConnectToSqlWithCSharp
                 {
                     for (int i = 0; i < listOfAccounts.Count(); i++)
                     {
-                        if (customerForKnrSorting.customerid != listOfAccounts[i].CustomerID)
+                        if (customerForKnrSorting.CustomerID != listOfAccounts[i].CustomerID)
                         {
-                            if (listOfCustomers.Where(x => x.customerid == listOfAccounts[i].CustomerID).Count() == 1)
+                            if (listOfCustomers.Where(x => x.CustomerID == listOfAccounts[i].CustomerID).Count() == 1)
                             {
-                                customerForKnrSorting = listOfCustomers.Where(x => x.customerid == listOfAccounts[i].CustomerID).First();
+                                customerForKnrSorting = listOfCustomers.Where(x => x.CustomerID == listOfAccounts[i].CustomerID).First();
+                                accountCounter = 1;
 
-                                Console.WriteLine("\nKunde {0}:\n", customerForKnrSorting.CustomerID);
-                                Console.WriteLine("Fornavn: \t {0}", customerForKnrSorting.firstname);
-                                Console.WriteLine("Efternavn: \t {0}", customerForKnrSorting.lastname);
-                                Console.WriteLine("Adresse: \t {0}", customerForKnrSorting.address);
-                                Console.WriteLine("By: \t\t {0}", customerForKnrSorting.city);
-                                Console.WriteLine("Postnr: \t {0}", customerForKnrSorting.postalcode);
-                                Console.WriteLine("Oprettet: \t {0}", customerForKnrSorting.created.ToString("MMMM dd, yyyy").ToUpper());
-                                Console.WriteLine("Aktiv: \t\t {0}", customerForKnrSorting.active ? "Ja" : "Nej");
+                                customerForKnrSorting.PrintCustomerInfo();
                             }
                             else
                             {
-                                throw new Exception("Fejl - flere kunder er tilknyttet samme konto... (AccountNo " + listOfAccounts[i].AccountNo + ")");
+                                throw new Exception("Fejl - flere kunder er tilknyttet samme konto... (Konto-nr: " + listOfAccounts[i].AccountNo + ")");
                             }
+                        }
+                        else
+                        {
+                            accountCounter++;
                         }
 
                         //TODO: Make konti/konto word correct to amount of accounts
@@ -240,24 +239,18 @@ namespace ConnectToSqlWithCSharp
                         {
                             if ( listOfAccounts[i].CustomerID != listOfAccounts[i - 1].CustomerID)
                             {
-                                Console.WriteLine("\nKonti tilhørende {0} {1}: \n", customerForKnrSorting.firstname, customerForKnrSorting.lastname);
+                                Console.WriteLine("\nKonti tilhørende {0} {1}: \n", customerForKnrSorting.FirstName, customerForKnrSorting.LastName);
                             }
                         }
-                        
-                        Console.WriteLine("\n\tKonto {0}:\n", listOfAccounts[i].AccountNo);
-                        Console.WriteLine("\tOprettet: \t {0}", listOfAccounts[i].Created.ToString("MMMM dd, yyyy").ToUpper());
-                        Console.WriteLine("\tKontonummer: \t {0}", listOfAccounts[i].AccountNo);
-                        Console.WriteLine("\tKontotype: \t {0}", listOfAccounts[i].AccountTypeName);
-                        Console.WriteLine("\tSaldo: \t\t {0:C}", listOfAccounts[i].Saldo);
-                        Console.WriteLine("\tAktiv: \t\t {0}", listOfAccounts[i].Active ? "Ja" : "Nej");
-                        Console.WriteLine("\tRentesats: \t {0:P}", listOfAccounts[i].InterestRate);
+
+                        listOfAccounts[i].PrintAccountInfo(accountCounter);
+
                         if (i + 1 < listOfAccounts.Count())
                         {
-                            if (listOfAccounts[i + 1].CustomerID != customerForKnrSorting.customerid)
+                            if (listOfAccounts[i + 1].CustomerID != customerForKnrSorting.CustomerID)
                             {
                                 Console.WriteLine("\n");
                                 WriteLine(Program.linjeFormat);
-                                Console.WriteLine("\n");
                             }
                         }
                         
@@ -267,40 +260,22 @@ namespace ConnectToSqlWithCSharp
                 {
                     for (int i = 0; i < listOfCustomers.Count(); i++)
                     {
-
-                        Console.WriteLine("Kunde {0}:\n", listOfCustomers[i].CustomerID);
-                        Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname);
-                        Console.WriteLine("Efternavn: \t {0}", listOfCustomers[i].lastname);
-                        Console.WriteLine("Adresse: \t {0}", listOfCustomers[i].address);
-                        Console.WriteLine("By: \t\t {0}", listOfCustomers[i].city);
-                        Console.WriteLine("Postnr: \t {0}", listOfCustomers[i].postalcode);
-                        Console.WriteLine("Oprettet: \t {0}", listOfCustomers[i].created.ToString("MMMM dd, yyyy").ToUpper());
-                        Console.WriteLine("Aktiv: \t\t {0}", listOfCustomers[i].active ? "Ja" : "Nej");
+                        listOfCustomers[i].PrintCustomerInfo();
 
                         customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
-                        Console.WriteLine("\nKonti tilhørende {0} {1}: ", listOfCustomers[i].firstname, listOfCustomers[i].lastname);
+                        Console.WriteLine("\nKonti tilhørende {0} {1}: ", listOfCustomers[i].FirstName, listOfCustomers[i].LastName);
                         for (int x = 0; x < customerAccounts.Count(); x++)
                         {
-                            WriteLine("\n\tKonto {0}:\n", x + 1);
-                            //Console.WriteLine("AccountID: \t {0}", customerAccounts[x].AccountID); Ligegyldigt?
-                            //Console.WriteLine("CustomerID: \t {0}", customerAccounts[x].CustomerID); Ligegyldigt?
-                            Console.WriteLine("\tOprettet: \t {0}", customerAccounts[x].Created.ToString("MMMM dd, yyyy").ToUpper());
-                            Console.WriteLine("\tKontonummer: \t {0}", customerAccounts[x].AccountNo);
-                            Console.WriteLine("\tKontotype: \t {0}", customerAccounts[x].AccountTypeName);
-                            Console.WriteLine("\tSaldo: \t\t {0:C}", customerAccounts[x].Saldo);
-                            Console.WriteLine("\tAktiv: \t\t {0}", customerAccounts[x].Active ? "Ja" : "Nej");
-                            Console.WriteLine("\tRentesats: \t {0:P}", customerAccounts[x].InterestRate);
+                            customerAccounts[x].PrintAccountInfo(i + 1);
                         }
                         Console.WriteLine("\n");
                         WriteLine(Program.linjeFormat);
-                        Console.WriteLine("\n");
                     }
                 }
                 conn.Close();
             }
             else
             {
-
                     //Build customers query with WHERE statement as parameter
                     customerCmd.CommandText = "SELECT * FROM Customers as c " +
                                               "WHERE CONCAT(c.firstname,' ',c.lastname,' ',c.address, ' ', c.City, ' ', c.PostalCode) LIKE '%' + @showCustomerChoice + '%'";
@@ -347,8 +322,8 @@ namespace ConnectToSqlWithCSharp
                         {
                             Console.WriteLine("{0}\t{1}\t{2}",
                                 customer.CustomerID.ToString(),
-                                customer.firstname + " " + customer.lastname,
-                                customer.address + " " + customer.city + " " + customer.postalcode);
+                                customer.FirstName + " " + customer.LastName,
+                                customer.Address + " " + customer.City + " " + customer.PostalCode);
                         }
                         
                         showCustomerChoice = Console.ReadLine();
@@ -365,11 +340,11 @@ namespace ConnectToSqlWithCSharp
                             foreach (var customer in listOfCustomers)
                             {
                                 //If all fields concatenated with spaces doesn't contain the search string, remove it from the listOfCustomers
-                                if (!(customer.firstname + " " + 
-                                    customer.lastname + " " + 
-                                    customer.address + " " + 
-                                    customer.city + " " + 
-                                    customer.postalcode.ToString()).Contains(showCustomerChoice))
+                                if (!(customer.FirstName + " " + 
+                                    customer.LastName + " " + 
+                                    customer.Address + " " + 
+                                    customer.City + " " + 
+                                    customer.PostalCode.ToString()).Contains(showCustomerChoice))
                                 {
                                     listOfCustomers.Remove(customer);
                                 }
@@ -378,10 +353,7 @@ namespace ConnectToSqlWithCSharp
                     }
 
                 //Build accounts query based on returned customerIds. 
-
                 //1. First build @customerIdSearchMatches (list of integers, (seperated by comma if multiple))
-
-                
                 try
                 {
                     string stringWithCustomerIds = "";
@@ -400,12 +372,8 @@ namespace ConnectToSqlWithCSharp
                     else
                     {
                         //TODO: If we make our own exceptions we can perhaps change this.
-                        //TODO: catch exception!! havlt ordnet
                         throw new Exception("\nListen indeholder ikke det du har søgt på. Forfra!");
                     }
-
-
-
 
                     //2. Then build sql
                     accountCmd.CommandText = "SELECT a.AccountID, a.CustomerId, a.Created, a.AccountNo, a.AccountTypeId, " +
@@ -440,29 +408,13 @@ namespace ConnectToSqlWithCSharp
                     //Now show the accounts.
                     for (int i = 0; i < listOfCustomers.Count(); i++)
                     {
-                        Console.WriteLine(Program.linjeFormat);
-                        Console.WriteLine("\nKunde {0}:\n", listOfCustomers[i].CustomerID);
-                        Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname);
-                        Console.WriteLine("Efternavn: \t {0}", listOfCustomers[i].lastname);
-                        Console.WriteLine("Adresse: \t {0}", listOfCustomers[i].address);
-                        Console.WriteLine("By: \t\t {0}", listOfCustomers[i].city);
-                        Console.WriteLine("Postnr: \t {0}", listOfCustomers[i].postalcode);
-                        Console.WriteLine("Oprettet: \t {0}", listOfCustomers[i].created.ToString("MMMM dd, yyyy").ToUpper());
-                        Console.WriteLine("Aktiv: \t\t {0}", listOfCustomers[i].active ? "Ja" : "Nej");
+                        listOfCustomers[i].PrintCustomerInfo();
 
                         customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
-                        Console.WriteLine("\nKonti tilhørende {0} {1}: ", listOfCustomers[i].firstname, listOfCustomers[i].lastname);
+                        Console.WriteLine("\nKonti tilhørende {0} {1}: ", listOfCustomers[i].FirstName, listOfCustomers[i].LastName);
                         for (int x = 0; x < customerAccounts.Count(); x++)
                         {
-                            Console.WriteLine("\n\tKonto {0}:\n", x + 1);
-                            //Console.WriteLine("AccountID: \t {0}", customerAccounts[x].AccountID); Ligegyldigt?
-                            //Console.WriteLine("CustomerID: \t {0}", customerAccounts[x].CustomerID); Ligegyldigt?
-                            Console.WriteLine("\tOprettet: \t {0}", customerAccounts[x].Created.ToString("MMMM dd, yyyy").ToUpper());
-                            Console.WriteLine("\tKontonummer: \t {0}", customerAccounts[x].AccountNo);
-                            Console.WriteLine("\tKontotype: \t {0}", customerAccounts[x].AccountTypeName);
-                            Console.WriteLine("\tSaldo: \t\t {0:C}", customerAccounts[x].Saldo);
-                            Console.WriteLine("\tAktiv: \t\t {0}", customerAccounts[x].Active ? "Ja" : "Nej");
-                            Console.WriteLine("\tRentesats: \t {0:P}", customerAccounts[x].InterestRate);
+                            customerAccounts[i].PrintAccountInfo(i);
                         }
                         Console.WriteLine("\n");
                         WriteLine(Program.linjeFormat);
@@ -470,25 +422,41 @@ namespace ConnectToSqlWithCSharp
                     }
                     accountReader.Close();
                     conn.Close();
-
-
-
-
-
-
-
                 }
+
                 catch(Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
-
-                
-                
-
-                
             }
+            Console.WriteLine("\nTryk på en vilkårlig tast for at vende tilbage til hovedmenuen.");
+            Console.ReadKey(true);
+            Console.Clear();
         }
+
+        public void PrintCustomerInfo(Customer customer)
+        {
+            Console.WriteLine("\nKunde {0}:\n", customer.CustomerID);
+            Console.WriteLine("Fornavn: \t {0}", customer.FirstName);
+            Console.WriteLine("Efternavn: \t {0}", customer.LastName);
+            Console.WriteLine("Adresse: \t {0}", customer.Address);
+            Console.WriteLine("By: \t\t {0}", customer.City);
+            Console.WriteLine("Postnr: \t {0}", customer.PostalCode);
+            Console.WriteLine("Oprettet: \t {0}", customer.Created.ToString("MMMM dd, yyyy").ToUpper());
+            Console.WriteLine("Aktiv: \t\t {0}", customer.Active ? "Ja" : "Nej");
+        }
+        public void PrintCustomerInfo()
+        {
+            Console.WriteLine("\nKunde {0}:\n", CustomerID);
+            Console.WriteLine("Fornavn: \t {0}", FirstName);
+            Console.WriteLine("Efternavn: \t {0}", LastName);
+            Console.WriteLine("Adresse: \t {0}", Address);
+            Console.WriteLine("By: \t\t {0}", City);
+            Console.WriteLine("Postnr: \t {0}", PostalCode);
+            Console.WriteLine("Oprettet: \t {0}", Created.ToString("MMMM dd, yyyy").ToUpper());
+            Console.WriteLine("Aktiv: \t\t {0}", Active ? "Ja" : "Nej");
+        }
+
         //IsNumeric check-method
         private bool IsDigitsOnly(string str)
         {
@@ -501,26 +469,7 @@ namespace ConnectToSqlWithCSharp
             return true;
         }
 
-        //private string StringBuilder()
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    int i = 1;
-
-        //    foreach (User user in UserList)
-        //    {
-        //        // IN clause
-        //        sb.Append("@UserId" + i.ToString() + ",");
-
-        //        // parameter
-        //        YourCommand.Parameters.AddWithValue("@UserId" + i.ToString(), user.UserId);
-
-        //        i++;
-        //    }
-        //    return sb;
-        //}
-//}
-
-    public void AddCustomer()
+        public void AddCustomer()
         {
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
             SqlCommand cmd = new SqlCommand("INSERT INTO Customers (firstname, lastname, address, city, postalcode) VALUES ('" + firstname + "', '" + lastname + "', '" + address + "', '" + city + "', '" + postalcode + "')", conn);
@@ -539,23 +488,23 @@ namespace ConnectToSqlWithCSharp
         }
 
         public void DeleteCustomer()
-        {       
-            
+        {
             // slet transactions, konti og kunden ud fra customer.customerid
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
             SqlCommand delCust = new SqlCommand(@"DELETE FROM Transactions WHERE AccountID IN(SELECT DISTINCT AccountID FROM Accounts WHERE accounts.CustomerId=@cID); 
                                                   DELETE FROM Accounts WHERE Accounts.customerId = @cID;
                                                   DELETE FROM Customers where CustomerID = @cID;", conn);
             delCust.Parameters.Add("@cID", System.Data.SqlDbType.Int);
-            delCust.Parameters["@cID"].Value = customerid;            
+            delCust.Parameters["@cID"].Value = customerid;
 
             conn.Open();
-        
+
             int custDeletion = (Int32)delCust.ExecuteNonQuery();
-            if(custDeletion > 0)
+            if (custDeletion > 0)
             {
                 Console.WriteLine("\nDu har slettet kundenummer {0}", customerid);
-            } else
+            }
+            else
             {
                 Console.WriteLine("\nKunde med kundenummer {0} ikke fundet", customerid);
             }

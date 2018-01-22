@@ -177,6 +177,33 @@ namespace ConnectToSqlWithCSharp
             }
         }
 
+        public void PrintAccountInfo(int? count)
+        {
+            if (count != null)
+            {
+                Console.WriteLine("\n\tKonto {0}:\n", +1);
+            }
+            Console.WriteLine("\tKontonummer: \t {0}", AccountNo);
+            Console.WriteLine("\tOprettet: \t {0}", Created.ToString("MMMM dd, yyyy").ToUpper());
+            Console.WriteLine("\tKontotype: \t {0}", AccountTypeName);
+            Console.WriteLine("\tSaldo: \t\t {0:C}", Saldo);
+            Console.WriteLine("\tAktiv: \t\t {0}", Active ? "Ja" : "Nej");
+            Console.WriteLine("\tRentesats: \t {0:P}", InterestRate);
+        }
+        public void PrintAccountInfo(Account account, int? count, bool tabulate = false)
+        {
+            if (count != null)
+            {
+                Console.WriteLine("\n\tKonto {0}:\n", +1);
+            }
+            Console.WriteLine("\tKontonummer: \t {0}", account.AccountNo);
+            Console.WriteLine("\tOprettet: \t {0}", account.Created.ToString("MMMM dd, yyyy").ToUpper());
+            Console.WriteLine("\tKontotype: \t {0}", account.AccountTypeName);
+            Console.WriteLine("\tSaldo: \t\t {0:C}", account.Saldo);
+            Console.WriteLine("\tAktiv: \t\t {0}", account.Active ? "Ja" : "Nej");
+            Console.WriteLine("\tRentesats: \t {0:P}", account.InterestRate);
+        }
+
         public void AddAccount()
         {
          
