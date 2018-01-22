@@ -99,6 +99,17 @@ VALUES		(1, 200, 2),
 
 GO
 
+CREATE TABLE Users (
+	UserID int IDENTITY(1,1) PRIMARY KEY,
+	UserName nvarchar(50) NOT NULL,
+	UserPassword nvarchar(32) NOT NULL
+	)
+GO
+
+INSERT INTO Users (UserName, UserPassword)
+VALUES ('bruger', '5f4dcc3b5aa765d61d8327deb882cf99')
+	
+
 /*SELECT CONCAT(FirstName, ' ', Lastname) as Name,
 Active,
 AccountTypes.AccountTypeName
@@ -132,4 +143,8 @@ DELETE FROM Transactions
 WHERE AccountID IN(SELECT DISTINCT AccountID FROM Accounts WHERE accounts.CustomerId=2); 
 DELETE FROM Accounts WHERE Accounts.customerId = 2;
 DELETE FROM Customers where CustomerID = 2;
+
+SELECT COUNT(*) FROM Customers where CustomerID = @custid
+
+cmd cmd.Scalar != 1
 */
