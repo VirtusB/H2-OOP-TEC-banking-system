@@ -63,6 +63,7 @@ namespace ConnectToSqlWithCSharp
             Customer customer = new Customer();
             Account account = new Account();
             Transaction transaction = new Transaction();
+            AccountType accountType = new AccountType();
 
 
 
@@ -82,6 +83,7 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine("\t7) Slet konto fra kunde");
                 Console.WriteLine("\t8) Vis transaktioner");
                 Console.WriteLine("\t9) Opret transaktion");
+                Console.WriteLine("\t10) Opret ny kontotype");
                 Console.Write("Indtast valgmulighed (0 for at afslutte): ");
                 string strSelection = Console.ReadLine();
                 int iSel;
@@ -110,7 +112,7 @@ namespace ConnectToSqlWithCSharp
                     case 2:
                         Console.Clear();
                         Console.WriteLine("Tilføj en kunde\n");
-
+                        #region kode + errorchecks
                         Console.Write("Indtast fornavn: ");
                         // tjek om fornavn er gyldigt
                         string CustFName = Console.ReadLine();
@@ -178,14 +180,16 @@ namespace ConnectToSqlWithCSharp
                             Console.WriteLine("\nUgyldigt postnummer");
                             break;
                         }
+                        #endregion
                         break;
                     case 3:
                         Console.Clear();
                         Console.WriteLine("Slet en kunde");
+                        #region kode + errorchecks
                         Console.Write("Indtast customer ID: ");
                         // tjek om cust id er gyldigt
                         string custIDTemp = Console.ReadLine();
-                        int custIDValid;                     
+                        int custIDValid;
                         if (int.TryParse(custIDTemp, out custIDValid))
                         {
                             customer.CustomerID = custIDValid;
@@ -196,8 +200,7 @@ namespace ConnectToSqlWithCSharp
                             Console.WriteLine("\nUgyldigt kunde nummer");
                             break;
                         }
-                        //customer.CustomerID = Convert.ToInt32(Console.ReadLine());
-                        //customer.DeleteCustomer();
+                        #endregion
                         break;
                     case 4:
                         Console.Clear();
@@ -211,8 +214,9 @@ namespace ConnectToSqlWithCSharp
                     case 6:
                         Console.Clear();
                         WriteLine("Tilføj en konto til en kunde");
+                        #region kode + errorchecks
                         Write("\nIndtast kunde nummer, som du vil oprette en konto for: ");
-                       
+
                         string strCustID = Console.ReadLine();
                         if (int.TryParse(strCustID, out int tempCustID))
                         {
@@ -222,13 +226,25 @@ namespace ConnectToSqlWithCSharp
                         else
                         {
                             Console.WriteLine("Indtast et gyldigt kunde nummer");
-                        }                   
+                        }
+                        #endregion
                         break;
                     case 7:
                         Console.Clear();
                         Console.Write("Indtast kontonr: ");
-                        account.AccountNo = Convert.ToInt32(Console.ReadLine());
-                        account.DeleteAccount();
+                        #region kode + errorchecks
+                        // tjek konto nummer
+                        string strAccNo = Console.ReadLine();
+                        if (int.TryParse(strAccNo, out int tempAccNo))
+                        {
+                            account.AccountNo = tempAccNo;
+                            account.DeleteAccount();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Indtast et gyldigt konto nummer");
+                        }
+                        #endregion
                         break;
                     case 8:
                         Console.Clear();
@@ -240,6 +256,36 @@ namespace ConnectToSqlWithCSharp
                     case 9:
                         Console.Clear();
                         transaction.AddTransaction();
+                        break;
+                    case 10:
+                        Console.Clear();
+                        Console.WriteLine("Opret ny kontotype\n");
+                        #region kode + errorchecks
+                        Write("Indtast navn på ny kontotype: ");
+                        string accTypeName = Console.ReadLine();
+                        if (accTypeName == "")
+                        {
+                            Console.WriteLine("\nNavn på kontotypen må ikke være blank");
+                            break;
+                        }
+                        else
+                        {
+                            accountType.AccountTypeName = accTypeName;
+                        }
+
+
+                        Write("\nIndtast rentesats på kontotype {0} i PROCENT: ", accTypeName);
+                        string accInterestRate = Console.ReadLine();
+                        if (double.TryParse(accInterestRate, out double tempInterestRate))
+                        {
+                            accountType.InterestRate = tempInterestRate / 100;
+                            accountType.AddAccountType();
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nIndtast et gyldigt tal");
+                        }
+                        #endregion
                         break;
                     default:
                         Console.WriteLine("Forkert, vælg en korrekt mulighed: {0}\r\n", iSel);

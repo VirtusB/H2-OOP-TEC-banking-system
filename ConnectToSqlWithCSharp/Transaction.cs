@@ -97,15 +97,23 @@ namespace ConnectToSqlWithCSharp
 
                 SqlDataReader reader = cmd.ExecuteReader();
 
-                while (reader.Read())
+                if (!reader.HasRows)
                 {
-                    Console.WriteLine("\nTransactionID: \t\t{0}\nKontonummer: \t\t{1}\nOprettelsesdato: \t{2}\nBeløb: \t\t\t{3:C}\nType: \t\t\t{4}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4)); //udskriv resultaterne
+                    Console.WriteLine("\nIngen transaktioner fundet for konto {0}", showSpecificTransaction);
+                } else
+                {
+                    while (reader.Read())
+                    {
+                        Console.WriteLine("\nTransactionID: \t\t{0}\nKontonummer: \t\t{1}\nOprettelsesdato: \t{2}\nBeløb: \t\t\t{3:C}\nType: \t\t\t{4}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4)); //udskriv resultaterne
+                    }
                 }
+
+                
 
                 reader.Close();
                 conn.Close();
             }
-            else
+            else if (showTransactionChoice == "")
             {
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
@@ -113,14 +121,28 @@ namespace ConnectToSqlWithCSharp
                 SqlCommand cmd = new SqlCommand("SELECT Transactions.TransactionID, Accounts.AccountNo, Transactions.Created, Transactions.Amount, TransactionTypes.TransactionName FROM Transactions JOIN Accounts ON Accounts.AccountID = Transactions.AccountId JOIN TransactionTypes ON Transactions.TransactionTypeId = TransactionTypes.TransactionTypeID", conn); // lav en SQL kommando
                 SqlDataReader reader = cmd.ExecuteReader();
 
-                while (reader.Read())
+                if(!reader.HasRows)
                 {
-                    Console.WriteLine("TransactionID: \t\t{0}\nKontonummer: \t\t{1}\nOprettelsesdato: \t{2}\nBeløb: \t\t\t{3:C}\nType: \t\t\t{4}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4)); //udskriv resultaterne
+                    Console.WriteLine("Ingen transaktioner fundet");
+                } else
+                {
+                    while (reader.Read())
+                    {
+                        Console.WriteLine("TransactionID: \t\t{0}\nKontonummer: \t\t{1}\nOprettelsesdato: \t{2}\nBeløb: \t\t\t{3:C}\nType: \t\t\t{4}\n", reader.GetValue(0), reader.GetValue(1), reader.GetValue(2), reader.GetValue(3), reader.GetValue(4)); //udskriv resultaterne
+                    }
                 }
+
+                
 
                 reader.Close();
                 conn.Close();
             }
+
+            else if (!int.TryParse(showTransactionChoice, out showSpecificTransaction)) // hvis brugerens indtastning ikke kan parses til int, antag at input ikke er et tal
+            {
+                Console.WriteLine("\nIndtast et gyldigt kontonummer");
+            }
+            
         }
 
         public void AddTransaction()
@@ -254,12 +276,12 @@ namespace ConnectToSqlWithCSharp
                 } else
                 {
                     //throw new Exception("fejl forkert...");
-                    WriteLine("Forkert valg");                 
+                    WriteLine("\n\nForkert valg! Indtast 1 eller 2");                 
                 }
             }
             catch(Exception e)
             {              
-                Console.WriteLine("\nFejl " + e.Message);
+                Console.WriteLine("\nFejl: " + e.Message + "\n(Det indastede tal skal være et gyldigt og eksisterende kontonummer)");
             }          
         }
     }
