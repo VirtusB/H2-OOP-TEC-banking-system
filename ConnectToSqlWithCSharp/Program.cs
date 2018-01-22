@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using static System.Console;
-
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace ConnectToSqlWithCSharp
 {
@@ -67,6 +68,7 @@ namespace ConnectToSqlWithCSharp
 
 
 
+            
 
 
             // Menu start
