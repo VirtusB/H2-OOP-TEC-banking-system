@@ -151,15 +151,22 @@ namespace ConnectToSqlWithCSharp
 
                 SqlDataReader reader = cmd.ExecuteReader();
 
-                while (reader.Read())
+                if(!reader.HasRows)
+                {      
+                    Console.WriteLine("\nIngen konto med kontonummer {0} fundet", showAccountsChoice); // udskriv dette hvis der ikke bliver fundet et kontonummer som stemmer overens
+                } else
                 {
-                    Console.WriteLine("\nAccountID: \t\t{0}\nKontoens ejer: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
+                    while (reader.Read())
+                    {
+                        Console.WriteLine("\nAccountID: \t\t{0}\nKontoens ejer: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
+                    }
                 }
+
+                
 
                 reader.Close();
                 conn.Close();
-            }
-            else
+            } else if (showAccountsChoice == "") // hvis brugeren klikker enter, udskriv alle konti
             {
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
@@ -174,7 +181,10 @@ namespace ConnectToSqlWithCSharp
                 //mangler dato formattering
                 reader.Close();
                 conn.Close();
-            }
+            } else if (!int.TryParse(showAccountsChoice, out showSpecificAccount)) // hvis brugerens indtastning ikke kan parses til int, antag at input ikke er et tal
+            {
+                Console.WriteLine("\nIndtast et gyldigt kontonummer");
+            }         
         }
 
         public void AddAccount()
