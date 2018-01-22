@@ -144,7 +144,7 @@ namespace ConnectToSqlWithCSharp
 
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn); // sæt connection string
 
-                SqlCommand cmd = new SqlCommand("SELECT AccountID, CONCAT(firstname,' ', lastname) as CustomerId, Accounts.Created, AccountNo, AccountTypeName, Saldo, case when Accounts.Active = 1 THEN 'Ja' When Accounts.Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId INNER JOIN customers ON accounts.customerid = customers.customerid WHERE AccountNo=@showSpecificAccount", conn); // lav en SQL kommando
+                SqlCommand cmd = new SqlCommand("SELECT AccountID, CONCAT(firstname,' ', lastname, ' (ID: ', accounts.customerid, ')') as CustomerId, Accounts.Created, AccountNo, AccountTypeName, Saldo, case when Accounts.Active = 1 THEN 'Ja' When Accounts.Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId INNER JOIN customers ON accounts.customerid = customers.customerid WHERE AccountNo=@showSpecificAccount", conn); // lav en SQL kommando
                 cmd.Parameters.Add("@showSpecificAccount", System.Data.SqlDbType.Int);
                 cmd.Parameters["@showSpecificAccount"].Value = showSpecificAccount;
                 conn.Open(); // åben forbindelsen
@@ -171,7 +171,7 @@ namespace ConnectToSqlWithCSharp
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
                 conn.Open(); // åben forbindelsen
-                SqlCommand cmd = new SqlCommand("SELECT AccountID, CONCAT(firstname,' ',lastname) as CustomerId, Accounts.Created, AccountNo, AccountTypeName, Saldo, case when Accounts.Active = 1 THEN 'Ja' When Accounts.Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId INNER JOIN customers ON accounts.customerid = customers.customerid", conn); // lav en SQL kommando
+                SqlCommand cmd = new SqlCommand("SELECT AccountID, CONCAT(firstname,' ',lastname, ' (ID: ', accounts.customerid, ')') as CustomerId, Accounts.Created, AccountNo, AccountTypeName, Saldo, case when Accounts.Active = 1 THEN 'Ja' When Accounts.Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId INNER JOIN customers ON accounts.customerid = customers.customerid", conn); // lav en SQL kommando
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
@@ -230,7 +230,13 @@ namespace ConnectToSqlWithCSharp
             int accTypeID = (int)selAccType.ExecuteScalar();
 
             SqlCommand selAccMax = new SqlCommand("SELECT TOP (1) [AccountNo] FROM [dbo].[Accounts] ORDER BY [AccountNo] DESC", conn);
-            int accMax = (int)selAccMax.ExecuteScalar() + 1; // fejler hvis der ikke eksisterer nogen konti i forvejen
+           
+            int? accMax = (int?)selAccMax.ExecuteScalar() + 1; // fejler hvis der ikke eksisterer nogen konti i forvejen
+
+            if (accMax == null)
+            {
+                accMax = 1000;
+            } 
 
 
             SqlCommand addAccCMD = new SqlCommand("INSERT INTO Accounts (CustomerID, AccountNo, AccountTypeId) VALUES (@custID, @accMax, @accTypeID)", conn);

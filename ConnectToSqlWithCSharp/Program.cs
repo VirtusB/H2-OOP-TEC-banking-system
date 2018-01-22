@@ -196,8 +196,6 @@ namespace ConnectToSqlWithCSharp
                             Console.WriteLine("\nUgyldigt kunde nummer");
                             break;
                         }
-                        //customer.CustomerID = Convert.ToInt32(Console.ReadLine());
-                        //customer.DeleteCustomer();
                         break;
                     case 4:
                         Console.Clear();
@@ -227,8 +225,17 @@ namespace ConnectToSqlWithCSharp
                     case 7:
                         Console.Clear();
                         Console.Write("Indtast kontonr: ");
-                        account.AccountNo = Convert.ToInt32(Console.ReadLine());
-                        account.DeleteAccount();
+                        // tjek konto nummer
+                        string strAccNo = Console.ReadLine();
+                        if (int.TryParse(strAccNo, out int tempAccNo))
+                        {
+                            account.AccountNo = tempAccNo;
+                            account.DeleteAccount();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Indtast et gyldigt konto nummer");
+                        }        
                         break;
                     case 8:
                         Console.Clear();
