@@ -11,6 +11,7 @@ namespace ConnectToSqlWithCSharp
 {
     public class Account
     {
+        #region private attributes
         private int accountid;
         private int customerid;
         private DateTime created;
@@ -20,6 +21,7 @@ namespace ConnectToSqlWithCSharp
         private bool active;
         private string accounttypename;
         private double interestrate;
+        #endregion 
 
         #region getters & setters
         public int AccountID
@@ -190,6 +192,7 @@ namespace ConnectToSqlWithCSharp
             Console.WriteLine("\tAktiv: \t\t {0}", Active ? "Ja" : "Nej");
             Console.WriteLine("\tRentesats: \t {0:P}", InterestRate);
         }
+
         public void PrintAccountInfo(Account account, int? count, bool tabulate = false)
         {
             if (count != null)
@@ -211,24 +214,20 @@ namespace ConnectToSqlWithCSharp
 
             conn.Open();
             SqlCommand checkCustID = new SqlCommand("SELECT COUNT(*) FROM Customers WHERE CustomerID = @custCheck", conn);
-            checkCustID.Parameters.Add("@custCheck", System.Data.SqlDbType.NVarChar); // tilføj parameter til vores SQL string
-            checkCustID.Parameters["@custCheck"].Value = customerid;
-
+            checkCustID.Parameters.Add(new SqlParameter("@custCheck", customerid));
 
             int checkedCust = (int)checkCustID.ExecuteScalar();
             if (checkedCust != 1)
-            {            
+            {
                 Console.WriteLine("\nKunde eksisterer ikke");
                 return;
             }
             
-
             Write("\nIndtast den kontotype du vil oprette: \n");
 
             // udskriv alle kontotyper
             SqlCommand selAccTypes = new SqlCommand("SELECT AccountTypeName FROM AccountTypes", conn);         
             SqlDataReader reader = selAccTypes.ExecuteReader();
-            
 
             while (reader.Read())
             {
@@ -237,37 +236,26 @@ namespace ConnectToSqlWithCSharp
             
             reader.Close();
 
-
             Write("\nIndtastning: ");
             string accTypeSelection = Console.ReadLine().ToLower();
-
+            //selected account type
             SqlCommand selAccType = new SqlCommand("SELECT AccountTypeID FROM AccountTypes WHERE AccountTypeName=@accTypeSelection", conn);
-            selAccType.Parameters.Add("@accTypeSelection", System.Data.SqlDbType.NVarChar); // tilføj parameter til vores SQL string
-            selAccType.Parameters["@accTypeSelection"].Value = accTypeSelection;
+            selAccType.Parameters.Add(new SqlParameter("@accTypeSelection", accTypeSelection));
             int accTypeID = (int)selAccType.ExecuteScalar();
 
+            //Get highest existing Account Number
             SqlCommand selAccMax = new SqlCommand("SELECT TOP (1) [AccountNo] FROM [dbo].[Accounts] ORDER BY [AccountNo] DESC", conn);
             int accMax = (int)selAccMax.ExecuteScalar() + 1; // fejler hvis der ikke eksisterer nogen konti i forvejen
 
-
+            //Insert
             SqlCommand addAccCMD = new SqlCommand("INSERT INTO Accounts (CustomerID, AccountNo, AccountTypeId) VALUES (@custID, @accMax, @accTypeID)", conn);
-            addAccCMD.Parameters.Add("@custID", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
-            addAccCMD.Parameters["@custID"].Value = customerid;
-
-            addAccCMD.Parameters.Add("@accTypeID", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
-            addAccCMD.Parameters["@accTypeID"].Value = accTypeID;
-
-            addAccCMD.Parameters.Add("@accMax", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
-            addAccCMD.Parameters["@accMax"].Value = accMax;
-            
+            addAccCMD.Parameters.Add(new SqlParameter("@custID", customerid));
+            addAccCMD.Parameters.Add(new SqlParameter("@accTypeId", accTypeID));
+            addAccCMD.Parameters.Add(new SqlParameter("@accMax", accMax));
             addAccCMD.ExecuteNonQuery();
-
-            Console.WriteLine("\nDu har oprettet en {0}, med kontonummer {1}", accTypeSelection, accMax);
+            Console.WriteLine("\nDu har oprettet en konto af typen {0}, med kontonummer {1}", accTypeSelection, accMax);
 
             conn.Close();
-
-
-
         }
         
         public void DeleteAccount()
