@@ -183,8 +183,21 @@ namespace ConnectToSqlWithCSharp
                         Console.Clear();
                         Console.WriteLine("Slet en kunde");
                         Console.Write("Indtast customer ID: ");
-                        customer.CustomerID = Convert.ToInt32(Console.ReadLine());
-                        customer.DeleteCustomer();
+                        // tjek om cust id er gyldigt
+                        string custIDTemp = Console.ReadLine();
+                        int custIDValid;                     
+                        if (int.TryParse(custIDTemp, out custIDValid))
+                        {
+                            customer.CustomerID = custIDValid;
+                            customer.DeleteCustomer();
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nUgyldigt kunde nummer");
+                            break;
+                        }
+                        //customer.CustomerID = Convert.ToInt32(Console.ReadLine());
+                        //customer.DeleteCustomer();
                         break;
                     case 4:
                         Console.Clear();

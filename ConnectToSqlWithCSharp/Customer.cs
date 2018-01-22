@@ -380,87 +380,113 @@ namespace ConnectToSqlWithCSharp
                 //Build accounts query based on returned customerIds. 
 
                 //1. First build @customerIdSearchMatches (list of integers, (seperated by comma if multiple))
-                string stringWithCustomerIds = "";
-                if (listOfCustomers.Count > 1)
+
+                
+                try
                 {
-                    foreach (int customerid in listOfCustomers.Select(x => x.CustomerID))
+                    string stringWithCustomerIds = "";
+                    if (listOfCustomers.Count > 1)
                     {
-                        stringWithCustomerIds += customerid + ",";
+                        foreach (int customerid in listOfCustomers.Select(x => x.CustomerID))
+                        {
+                            stringWithCustomerIds += customerid + ",";
+                        }
+                        stringWithCustomerIds = stringWithCustomerIds.Remove(stringWithCustomerIds.Length - 1);
                     }
-                    stringWithCustomerIds = stringWithCustomerIds.Remove(stringWithCustomerIds.Length - 1);
-                }
-                else if (listOfCustomers.Count == 1)
-                {
-                    stringWithCustomerIds = listOfCustomers[0].CustomerID.ToString();
-                } 
-                else
-                {
-                    //TODO: If we make our own exceptions we can perhaps change this.
-                    throw new Exception("Listen indeholder ikke det du har søgt på. Forfra!");
-                }
-
-                //2. Then build sql
-                accountCmd.CommandText = "SELECT a.AccountID, a.CustomerId, a.Created, a.AccountNo, a.AccountTypeId, " +
-                                            "a.Saldo, a.Active, at.AccountTypeID, at.AccountTypeName, at.Interestrate " +
-                                            "FROM Accounts as a " +
-                                            "INNER JOIN AccountTypes as at ON a.AccountTypeId = at.AccountTypeID " +
-                                            "WHERE a.CustomerId IN (" + stringWithCustomerIds + ")";
-
-                //Using parameter.Add didn't work, and google informed that using SqlParameters for WHERE xx IN (...) is not the way to go. Therefore we just added the string as a variable in the command...
-                //We could also have made a method for creating a temporary table in the database, and then added a JOIN to that, but that method is a bit too comprehensive; 
-                //we only need it here, and we also expect the user to be good at searching.
-
-                //Now get all the relevant accounts into listOfAccounts
-                SqlDataReader accountReader = accountCmd.ExecuteReader();
-                while (accountReader.Read())
-                {
-                    listOfAccounts.Add(new Account
+                    else if (listOfCustomers.Count == 1)
                     {
-                        AccountID = accountReader.GetInt32(0),
-                        CustomerID = accountReader.GetInt32(1),
-                        Created = accountReader.GetDateTime(2),
-                        AccountNo = accountReader.GetInt32(3),
-                        AccountTypeID = accountReader.GetInt32(4),
-                        Saldo = accountReader.GetDouble(5),
-                        Active = accountReader.GetBoolean(6),
-                        AccountTypeName = accountReader.GetString(8),
-                        InterestRate = accountReader.GetDouble(9)
-                    });
-                }
-                accountReader.Close();
-
-                //Now show the accounts.
-                for (int i = 0; i < listOfCustomers.Count(); i++)
-                {
-                    Console.WriteLine("Kunde {0}:\n", listOfCustomers[i].CustomerID);
-                    Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname);
-                    Console.WriteLine("Efternavn: \t {0}", listOfCustomers[i].lastname);
-                    Console.WriteLine("Adresse: \t {0}", listOfCustomers[i].address);
-                    Console.WriteLine("By: \t\t {0}", listOfCustomers[i].city);
-                    Console.WriteLine("Postnr: \t {0}", listOfCustomers[i].postalcode);
-                    Console.WriteLine("Oprettet: \t {0}", listOfCustomers[i].created.ToString("MMMM dd, yyyy").ToUpper());
-                    Console.WriteLine("Aktiv: \t\t {0}", listOfCustomers[i].active ? "Ja" : "Nej");
-
-                    customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
-                    Console.WriteLine("\nKonti tilhørende {0} {1}: ", listOfCustomers[i].firstname, listOfCustomers[i].lastname);
-                    for (int x = 0; x < customerAccounts.Count(); x++)
-                    {
-                        Console.WriteLine("\n\tKonto {0}:\n", x + 1);
-                        //Console.WriteLine("AccountID: \t {0}", customerAccounts[x].AccountID); Ligegyldigt?
-                        //Console.WriteLine("CustomerID: \t {0}", customerAccounts[x].CustomerID); Ligegyldigt?
-                        Console.WriteLine("\tOprettet: \t {0}", customerAccounts[x].Created.ToString("MMMM dd, yyyy").ToUpper());
-                        Console.WriteLine("\tKontonummer: \t {0}", customerAccounts[x].AccountNo);
-                        Console.WriteLine("\tKontotype: \t {0}", customerAccounts[x].AccountTypeName);
-                        Console.WriteLine("\tSaldo: \t\t {0:C}", customerAccounts[x].Saldo);
-                        Console.WriteLine("\tAktiv: \t\t {0}", customerAccounts[x].Active ? "Ja" : "Nej");
-                        Console.WriteLine("\tRentesats: \t {0:P}", customerAccounts[x].InterestRate);
+                        stringWithCustomerIds = listOfCustomers[0].CustomerID.ToString();
                     }
-                    Console.WriteLine("\n");
-                    WriteLine(Program.linjeFormat);
-                    Console.WriteLine("\n");
+                    else
+                    {
+                        //TODO: If we make our own exceptions we can perhaps change this.
+                        //TODO: catch exception!! havlt ordnet
+                        throw new Exception("\nListen indeholder ikke det du har søgt på. Forfra!");
+                    }
+
+
+
+
+                    //2. Then build sql
+                    accountCmd.CommandText = "SELECT a.AccountID, a.CustomerId, a.Created, a.AccountNo, a.AccountTypeId, " +
+                                                "a.Saldo, a.Active, at.AccountTypeID, at.AccountTypeName, at.Interestrate " +
+                                                "FROM Accounts as a " +
+                                                "INNER JOIN AccountTypes as at ON a.AccountTypeId = at.AccountTypeID " +
+                                                "WHERE a.CustomerId IN (" + stringWithCustomerIds + ")";
+
+                    //Using parameter.Add didn't work, and google informed that using SqlParameters for WHERE xx IN (...) is not the way to go. Therefore we just added the string as a variable in the command...
+                    //We could also have made a method for creating a temporary table in the database, and then added a JOIN to that, but that method is a bit too comprehensive; 
+                    //we only need it here, and we also expect the user to be good at searching.
+
+                    //Now get all the relevant accounts into listOfAccounts
+                    SqlDataReader accountReader = accountCmd.ExecuteReader();
+                    while (accountReader.Read())
+                    {
+                        listOfAccounts.Add(new Account
+                        {
+                            AccountID = accountReader.GetInt32(0),
+                            CustomerID = accountReader.GetInt32(1),
+                            Created = accountReader.GetDateTime(2),
+                            AccountNo = accountReader.GetInt32(3),
+                            AccountTypeID = accountReader.GetInt32(4),
+                            Saldo = accountReader.GetDouble(5),
+                            Active = accountReader.GetBoolean(6),
+                            AccountTypeName = accountReader.GetString(8),
+                            InterestRate = accountReader.GetDouble(9)
+                        });
+                    }
+                    accountReader.Close();
+
+                    //Now show the accounts.
+                    for (int i = 0; i < listOfCustomers.Count(); i++)
+                    {
+                        Console.WriteLine(Program.linjeFormat);
+                        Console.WriteLine("\nKunde {0}:\n", listOfCustomers[i].CustomerID);
+                        Console.WriteLine("Fornavn: \t {0}", listOfCustomers[i].firstname);
+                        Console.WriteLine("Efternavn: \t {0}", listOfCustomers[i].lastname);
+                        Console.WriteLine("Adresse: \t {0}", listOfCustomers[i].address);
+                        Console.WriteLine("By: \t\t {0}", listOfCustomers[i].city);
+                        Console.WriteLine("Postnr: \t {0}", listOfCustomers[i].postalcode);
+                        Console.WriteLine("Oprettet: \t {0}", listOfCustomers[i].created.ToString("MMMM dd, yyyy").ToUpper());
+                        Console.WriteLine("Aktiv: \t\t {0}", listOfCustomers[i].active ? "Ja" : "Nej");
+
+                        customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
+                        Console.WriteLine("\nKonti tilhørende {0} {1}: ", listOfCustomers[i].firstname, listOfCustomers[i].lastname);
+                        for (int x = 0; x < customerAccounts.Count(); x++)
+                        {
+                            Console.WriteLine("\n\tKonto {0}:\n", x + 1);
+                            //Console.WriteLine("AccountID: \t {0}", customerAccounts[x].AccountID); Ligegyldigt?
+                            //Console.WriteLine("CustomerID: \t {0}", customerAccounts[x].CustomerID); Ligegyldigt?
+                            Console.WriteLine("\tOprettet: \t {0}", customerAccounts[x].Created.ToString("MMMM dd, yyyy").ToUpper());
+                            Console.WriteLine("\tKontonummer: \t {0}", customerAccounts[x].AccountNo);
+                            Console.WriteLine("\tKontotype: \t {0}", customerAccounts[x].AccountTypeName);
+                            Console.WriteLine("\tSaldo: \t\t {0:C}", customerAccounts[x].Saldo);
+                            Console.WriteLine("\tAktiv: \t\t {0}", customerAccounts[x].Active ? "Ja" : "Nej");
+                            Console.WriteLine("\tRentesats: \t {0:P}", customerAccounts[x].InterestRate);
+                        }
+                        Console.WriteLine("\n");
+                        WriteLine(Program.linjeFormat);
+                        Console.WriteLine("\n");
+                    }
+                    accountReader.Close();
+                    conn.Close();
+
+
+
+
+
+
+
                 }
-                accountReader.Close();
-                conn.Close();
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                
+                
+
+                
             }
         }
         //IsNumeric check-method
@@ -521,20 +547,18 @@ namespace ConnectToSqlWithCSharp
                                                   DELETE FROM Accounts WHERE Accounts.customerId = @cID;
                                                   DELETE FROM Customers where CustomerID = @cID;", conn);
             delCust.Parameters.Add("@cID", System.Data.SqlDbType.Int);
-            delCust.Parameters["@cID"].Value = customerid;
-
-            
-
+            delCust.Parameters["@cID"].Value = customerid;            
 
             conn.Open();
-
-            int custDeletion = (int)delCust.ExecuteNonQuery();
-
-
-            Console.WriteLine("Du har slettet kunde nummer {0}", customerid);
-
-           
-
+        
+            int custDeletion = (Int32)delCust.ExecuteNonQuery();
+            if(custDeletion > 0)
+            {
+                Console.WriteLine("\nDu har slettet kundenummer {0}", customerid);
+            } else
+            {
+                Console.WriteLine("\nKunde med kundenummer {0} ikke fundet", customerid);
+            }
 
             conn.Close();
         }

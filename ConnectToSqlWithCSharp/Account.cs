@@ -193,8 +193,6 @@ namespace ConnectToSqlWithCSharp
             {            
                 Console.WriteLine("\nKunde eksisterer ikke");
                 return;
-            } else {
-                Console.WriteLine("Konto oprettet");
             }
             
 
@@ -221,8 +219,8 @@ namespace ConnectToSqlWithCSharp
             selAccType.Parameters["@accTypeSelection"].Value = accTypeSelection;
             int accTypeID = (int)selAccType.ExecuteScalar();
 
-            SqlCommand selAccMax = new SqlCommand("SELECT TOP (1) AccountNo FROM Accounts ORDER BY AccountNo DESC", conn);
-            int accMax = (int)selAccMax.ExecuteScalar() + 1;
+            SqlCommand selAccMax = new SqlCommand("SELECT TOP (1) [AccountNo] FROM [dbo].[Accounts] ORDER BY [AccountNo] DESC", conn);
+            int accMax = (int)selAccMax.ExecuteScalar() + 1; // fejler hvis der ikke eksisterer nogen konti i forvejen
 
 
             SqlCommand addAccCMD = new SqlCommand("INSERT INTO Accounts (CustomerID, AccountNo, AccountTypeId) VALUES (@custID, @accMax, @accTypeID)", conn);
@@ -237,7 +235,7 @@ namespace ConnectToSqlWithCSharp
             
             addAccCMD.ExecuteNonQuery();
 
-            Console.WriteLine("Du har oprettet en {0}, med kontonummer {1}", accTypeSelection, accMax);
+            Console.WriteLine("\nDu har oprettet en {0}, med kontonummer {1}", accTypeSelection, accMax);
 
             conn.Close();
 
@@ -285,7 +283,7 @@ namespace ConnectToSqlWithCSharp
             catch
             {
                 Console.WriteLine("Konto ikke fundet");
-            }                                
+            }
             conn.Close();
         }
     }
