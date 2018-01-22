@@ -9,6 +9,7 @@ using static System.Console;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading;
+using System.Security;
 
 namespace ConnectToSqlWithCSharp
 {
@@ -66,6 +67,7 @@ namespace ConnectToSqlWithCSharp
             #endregion
 
             #region Login
+
             User user = new User();
 
             do
@@ -78,7 +80,8 @@ namespace ConnectToSqlWithCSharp
             do
             {          
                 Console.Write("\nIndtast adgangskode: ");
-                user.UserPassword = Console.ReadLine();              
+                //user.UserPassword = Console.ReadLine();       
+                user.UserPassword = User.GetConsolePassword();
             } while (user.UserAuth() != true);
 
             ForegroundColor = ConsoleColor.Green;
@@ -88,6 +91,10 @@ namespace ConnectToSqlWithCSharp
             Console.Clear();
 
             #endregion
+            
+            
+
+            
 
             Customer customer = new Customer();
             Account account = new Account();
@@ -114,6 +121,7 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine("\t8) Vis transaktioner");
                 Console.WriteLine("\t9) Opret transaktion");
                 Console.WriteLine("\t10) Opret ny kontotype");
+                Console.WriteLine("\t11) Opret ny bruger");             
                 Console.Write("Indtast valgmulighed (0 for at afslutte): ");
                 string strSelection = Console.ReadLine();
                 int iSel;
@@ -316,6 +324,10 @@ namespace ConnectToSqlWithCSharp
                             Console.WriteLine("\nIndtast et gyldigt tal");
                         }
                         #endregion
+                        break;
+                    case 11:
+                        Console.Clear();
+                        Console.WriteLine("Opret ny bruger\n");
                         break;
                     default:
                         Console.WriteLine("Forkert, vælg en korrekt mulighed: {0}\r\n", iSel);

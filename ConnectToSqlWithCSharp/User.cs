@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using static System.Console;
+using System.Security;
 
 namespace ConnectToSqlWithCSharp
 {
@@ -103,12 +104,56 @@ namespace ConnectToSqlWithCSharp
                 return false;
             } else
             {
+                conn.Open();
+                SqlCommand addLogging = new SqlCommand("INSERT INTO UserLogging (UserID) VALUES ((SELECT UserID FROM Users WHERE Username = @uName))", conn);
+
+                addLogging.Parameters.Add(new SqlParameter("@uName", username));
+
+                addLogging.ExecuteNonQuery();
+
+                conn.Close();
+
                 return true;
             }
 
         }
 
-        
+        public void AddUser()
+        {
+
+        }
+
+        public static string GetConsolePassword()
+        {
+            StringBuilder sb = new StringBuilder();
+            while (true)
+            {
+                ConsoleKeyInfo cki = Console.ReadKey(true);
+                if (cki.Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine();
+                    break;
+                }
+
+                if (cki.Key == ConsoleKey.Backspace)
+                {
+                    if (sb.Length > 0)
+                    {
+                        Console.Write("\b\0\b");
+                        sb.Length--;
+                    }
+
+                    continue;
+                }
+
+                Console.Write('*');
+                sb.Append(cki.KeyChar);
+            }
+
+            return sb.ToString();
+        }
+
+
 
     }
 }
