@@ -107,7 +107,27 @@ CREATE TABLE Users (
 GO
 
 INSERT INTO Users (UserName, UserPassword)
-VALUES ('bruger', '5f4dcc3b5aa765d61d8327deb882cf99')
+VALUES ('bruger', '5f4dcc3b5aa765d61d8327deb882cf99'),
+	   ('Direktør', 'af17c5f7aabbd372b24c2000890ecd28')
+
+
+CREATE TABLE UserLogging (
+	LoggingID int IDENTITY(1,1) PRIMARY KEY,
+	UserId int NOT NULL FOREIGN KEY REFERENCES Users(UserID),
+	Timestamp datetime default GETDATE()
+	)
+GO
+
+INSERT INTO USerLogging (UserId)
+VALUES (1),
+		(2)
+	
+INSERT INTO USerLogging (UserId,timestamp)
+VALUES (1, '2018-01-20'),
+	   (1, '2018-01-20'),
+	   (2, '2017-12-31'),
+	   (2, '2018-01-01')
+		
 	
 
 /*SELECT CONCAT(FirstName, ' ', Lastname) as Name,
