@@ -158,7 +158,19 @@ namespace ConnectToSqlWithCSharp
                 {
                     while (reader.Read())
                     {
+                        Console.WriteLine(Program.linjeFormat);
                         Console.WriteLine("\nAccountID: \t\t{0}\nKontoens ejer: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
+                        double kontoSaldo = (double)reader.GetValue(5);
+                        double kontoInterestRate = (double)reader.GetValue(7);
+                        double interestAmount = kontoSaldo * kontoInterestRate;
+                        double interestTotal = interestAmount + kontoSaldo;
+                        if (kontoSaldo > 0 && kontoInterestRate > 0)
+                        {
+                            Write("Rentebeløb: \t\t{0:C} (+{1:C})\n", interestTotal, interestAmount);        
+                        }
+
+                        Console.WriteLine("\n" + Program.linjeFormat);
+                        
                     }
                 }
 
@@ -173,15 +185,32 @@ namespace ConnectToSqlWithCSharp
                 conn.Open(); // åben forbindelsen
                 SqlCommand cmd = new SqlCommand("SELECT AccountID, CONCAT(firstname,' ',lastname, ' (ID: ', accounts.customerid, ')') as CustomerId, Accounts.Created, AccountNo, AccountTypeName, Saldo, case when Accounts.Active = 1 THEN 'Ja' When Accounts.Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId INNER JOIN customers ON accounts.customerid = customers.customerid", conn); // lav en SQL kommando
                 SqlDataReader reader = cmd.ExecuteReader();
-
+                Console.WriteLine("\n" + Program.linjeFormat);
                 while (reader.Read())
                 {
                     Console.WriteLine("AccountID: \t\t{0}\nKontoens ejer: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}\n", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
+                    Console.WriteLine(Program.linjeFormat);
                 }
-                //mangler dato formattering
                 reader.Close();
                 conn.Close();
-            } else if (!int.TryParse(showAccountsChoice, out showSpecificAccount)) // hvis brugerens indtastning ikke kan parses til int, antag at input ikke er et tal
+            } else if (showAccountsChoice.ToLower() == "overtræk")
+            {
+                SqlConnection conn = VoresServere.WhichServer(Program.Navn);
+
+                conn.Open(); // åben forbindelsen
+                SqlCommand cmd = new SqlCommand("SELECT AccountID, CONCAT(firstname,' ',lastname, ' (ID: ', accounts.customerid, ')') as CustomerId, Accounts.Created, AccountNo, AccountTypeName, Saldo, case when Accounts.Active = 1 THEN 'Ja' When Accounts.Active = 0 THEN 'Nej' ELSE 'ERROR' end as Aktiv, InterestRate FROM [dbo].[Accounts] INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId INNER JOIN customers ON accounts.customerid = customers.customerid WHERE Saldo < 0", conn); // lav en SQL kommando
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                Console.WriteLine("\n" + Program.linjeFormat);
+                while (reader.Read())
+                {                
+                    Console.WriteLine("\nAccountID: \t\t{0}\nKontoens ejer: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}\n", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
+                    Console.WriteLine(Program.linjeFormat);
+                }
+                reader.Close();
+                conn.Close();
+            }
+            else if (!int.TryParse(showAccountsChoice, out showSpecificAccount)) // hvis brugerens indtastning ikke kan parses til int, antag at input ikke er et tal
             {
                 Console.WriteLine("\nIndtast et gyldigt kontonummer");
             }         
