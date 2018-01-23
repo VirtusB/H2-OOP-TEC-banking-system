@@ -18,18 +18,20 @@ namespace ConnectToSqlWithCSharp
                 "Data Source=DESKTOP-TN867E5;" +
                 "Initial Catalog=H2_OOP_TEC_Banking_System;" +
                 "Integrated Security=SSPI;";
-            } else if (Navn == "Bjarke")
+            }
+            else if (Navn == "Bjarke")
             {
                 conn.ConnectionString =
                 "Data Source=EU300632;" +
                 "Initial Catalog=H2_OOP_TEC_Banking_System;" +
                 "Integrated Security=SSPI;";
-            } else if (Navn == "Morten")
+            }
+            else if (Navn == "Morten")
             {
                 // Morten connection string
             }
             return conn;
         }
-            
+
     }
 }

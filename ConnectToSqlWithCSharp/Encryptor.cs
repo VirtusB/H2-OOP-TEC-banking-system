@@ -12,6 +12,8 @@ namespace ConnectToSqlWithCSharp
     {
         public static string MD5Hash(string text)
         {
+            // metode til at kryptere en almindelig string til MD5 hash
+
             MD5 md5 = new MD5CryptoServiceProvider();
 
             //compute hash from the bytes of text

@@ -116,7 +116,7 @@ namespace ConnectToSqlWithCSharp
                 active = value;
             }
         }
-#endregion
+        #endregion
 
         public Customer()
         {
@@ -132,6 +132,9 @@ namespace ConnectToSqlWithCSharp
 
         public void ShowCustomer()
         {
+            // denne metode viser enten alle kunder eller en specifik kunde
+            // standard soreteing er efter efternavn, -knr kan tilføjes i indtastningen hvilket resulterer i at der bliver sorteret efter kontonummer
+
             Console.WriteLine("Indtast navn for at se en specifik kunde");
             Console.WriteLine("Tryk ENTER for at se en komplet kundeoversigt");
             Console.WriteLine("(Tilføj -knr for at sortere efter konto-nr)");
@@ -155,7 +158,7 @@ namespace ConnectToSqlWithCSharp
             SqlCommand accountCmd = new SqlCommand();
             customerCmd.Connection = conn;
             accountCmd.Connection = conn;
-            if (showCustomerChoice == "")
+            if (showCustomerChoice == "") // en tom string antages at være ENTER
             {
                 //TODO: Add sorting if knrSorting is true (if -knr is written)
                 //TODO: Mode code that is duplicated into private method
@@ -201,7 +204,7 @@ namespace ConnectToSqlWithCSharp
                 //linq - this will create a new list. Not optimal:
                 //var SortedList = listOfCustomers.OrderBy(x => x.lastname).ToList();
                 //Sort in place can be done with .Sort() so we will do that.
-                if(knrSorting)
+                if (knrSorting)
                 {
                     listOfAccounts.Sort((x, y) => x.AccountNo.CompareTo(y.AccountNo));
                 }
@@ -237,7 +240,7 @@ namespace ConnectToSqlWithCSharp
                         //TODO: Make konti/konto word correct to amount of accounts
                         if (i > 0)
                         {
-                            if ( listOfAccounts[i].CustomerID != listOfAccounts[i - 1].CustomerID)
+                            if (listOfAccounts[i].CustomerID != listOfAccounts[i - 1].CustomerID)
                             {
                                 Console.WriteLine("\nKonti tilhørende {0} {1}: \n", customerForKnrSorting.FirstName, customerForKnrSorting.LastName);
                             }
@@ -253,7 +256,7 @@ namespace ConnectToSqlWithCSharp
                                 WriteLine(Program.linjeFormat);
                             }
                         }
-                        
+
                     }
                 }
                 else
@@ -276,81 +279,81 @@ namespace ConnectToSqlWithCSharp
             }
             else
             {
-                    //Build customers query with WHERE statement as parameter
-                    customerCmd.CommandText = "SELECT * FROM Customers as c " +
-                                              "WHERE CONCAT(c.firstname,' ',c.lastname,' ',c.address, ' ', c.City, ' ', c.PostalCode) LIKE '%' + @showCustomerChoice + '%'";
+                //Build customers query with WHERE statement as parameter
+                customerCmd.CommandText = "SELECT * FROM Customers as c " +
+                                          "WHERE CONCAT(c.firstname,' ',c.lastname,' ',c.address, ' ', c.City, ' ', c.PostalCode) LIKE '%' + @showCustomerChoice + '%'";
 
-                    customerCmd.Parameters.Add(new SqlParameter("@showCustomerChoice", showCustomerChoice)); // tilføj parameter til vores SQL string
+                customerCmd.Parameters.Add(new SqlParameter("@showCustomerChoice", showCustomerChoice)); // tilføj parameter til vores SQL string
 
-                    //TODO: The old code below does the same as the above. We should consider if other places has code like this that could be changed to the above? 50% reduction
-                    //customerCmd.Parameters.Add("@showCustomerChoice", System.Data.SqlDbType.NVarChar);
-                    //customerCmd.Parameters["@showCustomerChoice"].Value = showCustomerChoice;
-                    //accountCmd.Parameters.Add("@showCustomerChoice", System.Data.SqlDbType.NVarChar); // tilføj parameter til vores SQL string
-                    //accountCmd.Parameters["@showCustomerChoice"].Value = showCustomerChoice;
+                //TODO: The old code below does the same as the above. We should consider if other places has code like this that could be changed to the above? 50% reduction
+                //customerCmd.Parameters.Add("@showCustomerChoice", System.Data.SqlDbType.NVarChar);
+                //customerCmd.Parameters["@showCustomerChoice"].Value = showCustomerChoice;
+                //accountCmd.Parameters.Add("@showCustomerChoice", System.Data.SqlDbType.NVarChar); // tilføj parameter til vores SQL string
+                //accountCmd.Parameters["@showCustomerChoice"].Value = showCustomerChoice;
 
-                    //Add all matching customers to listOfCustomers
-                    conn.Open();
-                    SqlDataReader customerReader = customerCmd.ExecuteReader();
-                    while (customerReader.Read())
+                //Add all matching customers to listOfCustomers
+                conn.Open();
+                SqlDataReader customerReader = customerCmd.ExecuteReader();
+                while (customerReader.Read())
+                {
+                    listOfCustomers.Add(new Customer
                     {
-                        listOfCustomers.Add(new Customer
-                        {
-                            CustomerID = customerReader.GetInt32(0),
-                            Created = customerReader.GetDateTime(1),
-                            FirstName = customerReader.GetString(2),
-                            LastName = customerReader.GetString(3),
-                            Address = customerReader.GetString(4),
-                            City = customerReader.GetString(5),
-                            PostalCode = customerReader.GetInt32(6),
-                            Active = customerReader.GetBoolean(7)
-                        });
+                        CustomerID = customerReader.GetInt32(0),
+                        Created = customerReader.GetDateTime(1),
+                        FirstName = customerReader.GetString(2),
+                        LastName = customerReader.GetString(3),
+                        Address = customerReader.GetString(4),
+                        City = customerReader.GetString(5),
+                        PostalCode = customerReader.GetInt32(6),
+                        Active = customerReader.GetBoolean(7)
+                    });
+                }
+                customerReader.Close(); // luk reader brugt til Customers
+
+                //if (listOfCustomers.Count() > 1)
+                while (listOfCustomers.Count() > 1 && showAll == false)
+                {
+                    //knrSorting = false;
+                    Console.WriteLine("\nFlere kunder blev fundet. " +
+                        "\nIndtast kunde-ID eller et mere præcist navn, for at se data om specifik kunde." +
+                        "\nTryk enter for at se data om alle kunder fra denne liste." +
+                        "\n(Tilføj -knr for at sortere efter konto-nr)");
+
+                    Console.WriteLine("\n");
+                    Console.WriteLine("Kunde-ID\tNavn\tAdresse");
+                    foreach (var customer in listOfCustomers)
+                    {
+                        Console.WriteLine("{0}\t{1}\t{2}",
+                            customer.CustomerID.ToString(),
+                            customer.FirstName + " " + customer.LastName,
+                            customer.Address + " " + customer.City + " " + customer.PostalCode);
                     }
-                    customerReader.Close(); // luk reader brugt til Customers
 
-                    //if (listOfCustomers.Count() > 1)
-                    while (listOfCustomers.Count() > 1 && showAll == false)
+                    showCustomerChoice = Console.ReadLine();
+                    if (showCustomerChoice != "" && IsDigitsOnly(showCustomerChoice))
                     {
-                        //knrSorting = false;
-                        Console.WriteLine("\nFlere kunder blev fundet. " +
-                            "\nIndtast kunde-ID eller et mere præcist navn, for at se data om specifik kunde." +
-                            "\nTryk enter for at se data om alle kunder fra denne liste." +
-                            "\n(Tilføj -knr for at sortere efter konto-nr)");
-
-                        Console.WriteLine("\n");
-                        Console.WriteLine("Kunde-ID\tNavn\tAdresse");
+                        listOfCustomers.RemoveAll(x => x.CustomerID.ToString() != showCustomerChoice);
+                    }
+                    else if (showCustomerChoice == "")
+                    {
+                        showAll = true;
+                    }
+                    else
+                    {
                         foreach (var customer in listOfCustomers)
                         {
-                            Console.WriteLine("{0}\t{1}\t{2}",
-                                customer.CustomerID.ToString(),
-                                customer.FirstName + " " + customer.LastName,
-                                customer.Address + " " + customer.City + " " + customer.PostalCode);
-                        }
-                        
-                        showCustomerChoice = Console.ReadLine();
-                        if (showCustomerChoice != "" && IsDigitsOnly(showCustomerChoice))
-                        {
-                            listOfCustomers.RemoveAll(x => x.CustomerID.ToString() != showCustomerChoice);
-                        }
-                        else if (showCustomerChoice == "")
-                        {
-                            showAll = true;
-                        }
-                        else
-                        {
-                            foreach (var customer in listOfCustomers)
+                            //If all fields concatenated with spaces doesn't contain the search string, remove it from the listOfCustomers
+                            if (!(customer.FirstName + " " +
+                                customer.LastName + " " +
+                                customer.Address + " " +
+                                customer.City + " " +
+                                customer.PostalCode.ToString()).Contains(showCustomerChoice))
                             {
-                                //If all fields concatenated with spaces doesn't contain the search string, remove it from the listOfCustomers
-                                if (!(customer.FirstName + " " + 
-                                    customer.LastName + " " + 
-                                    customer.Address + " " + 
-                                    customer.City + " " + 
-                                    customer.PostalCode.ToString()).Contains(showCustomerChoice))
-                                {
-                                    listOfCustomers.Remove(customer);
-                                }
+                                listOfCustomers.Remove(customer);
                             }
                         }
                     }
+                }
 
                 //Build accounts query based on returned customerIds. 
                 //1. First build @customerIdSearchMatches (list of integers, (seperated by comma if multiple))
@@ -424,7 +427,7 @@ namespace ConnectToSqlWithCSharp
                     conn.Close();
                 }
 
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
@@ -471,6 +474,8 @@ namespace ConnectToSqlWithCSharp
 
         public void AddCustomer()
         {
+            //denne metode tilføjer en kunde
+
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
             SqlCommand cmd = new SqlCommand("INSERT INTO Customers (firstname, lastname, address, city, postalcode) VALUES ('" + firstname + "', '" + lastname + "', '" + address + "', '" + city + "', '" + postalcode + "')", conn);
 
@@ -489,6 +494,7 @@ namespace ConnectToSqlWithCSharp
 
         public void DeleteCustomer()
         {
+            // denne metode sletter en kunde
             // slet transactions, konti og kunden ud fra customer.customerid
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
             SqlCommand delCust = new SqlCommand(@"DELETE FROM Transactions WHERE AccountID IN(SELECT DISTINCT AccountID FROM Accounts WHERE accounts.CustomerId=@cID); 

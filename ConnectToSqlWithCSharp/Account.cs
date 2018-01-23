@@ -153,10 +153,11 @@ namespace ConnectToSqlWithCSharp
 
                 SqlDataReader reader = cmd.ExecuteReader();
 
-                if(!reader.HasRows)
-                {      
+                if (!reader.HasRows)
+                {
                     Console.WriteLine("\nIngen konto med kontonummer {0} fundet", showAccountsChoice); // udskriv dette hvis der ikke bliver fundet et kontonummer som stemmer overens
-                } else
+                }
+                else
                 {
                     while (reader.Read())
                     {
@@ -168,19 +169,20 @@ namespace ConnectToSqlWithCSharp
                         double interestTotal = interestAmount + kontoSaldo;
                         if (kontoSaldo > 0 && kontoInterestRate > 0)
                         {
-                            Write("Rentebeløb: \t\t{0:C} (+{1:C})\n", interestTotal, interestAmount);        
+                            Write("Rentebeløb: \t\t{0:C} (+{1:C})\n", interestTotal, interestAmount);
                         }
 
                         Console.WriteLine("\n" + Program.linjeFormat);
-                        
+
                     }
                 }
 
-                
+
 
                 reader.Close();
                 conn.Close();
-            } else if (showAccountsChoice == "") // hvis brugeren klikker enter, udskriv alle konti
+            }
+            else if (showAccountsChoice == "") // hvis brugeren klikker enter, udskriv alle konti
             {
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
@@ -195,7 +197,8 @@ namespace ConnectToSqlWithCSharp
                 }
                 reader.Close();
                 conn.Close();
-            } else if (showAccountsChoice.ToLower() == "overtræk")
+            }
+            else if (showAccountsChoice.ToLower() == "overtræk")
             {
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
@@ -205,7 +208,7 @@ namespace ConnectToSqlWithCSharp
 
                 Console.WriteLine("\n" + Program.linjeFormat);
                 while (reader.Read())
-                {                
+                {
                     Console.WriteLine("\nAccountID: \t\t{0}\nKontoens ejer: \t\t{1}\nOprettelsesdato: \t{2}\nKontonummer: \t\t{3}\nKontotype: \t\t{4}\nSaldo: \t\t\t{5:C}\nKonto aktiv: \t\t{6}\nRentesats: \t\t{7:P}\n", reader.GetValue(0), reader.GetValue(1), Convert.ToDateTime(reader.GetValue(2)).ToString("MMMM dd, yyyy").ToUpper(), reader.GetValue(3), reader.GetValue(4), reader.GetValue(5), reader.GetValue(6), reader.GetValue(7)); //udskriv resultaterne
                     Console.WriteLine(Program.linjeFormat);
                 }
@@ -215,7 +218,7 @@ namespace ConnectToSqlWithCSharp
             else if (!int.TryParse(showAccountsChoice, out showSpecificAccount)) // hvis brugerens indtastning ikke kan parses til int, antag at input ikke er et tal
             {
                 Console.WriteLine("\nIndtast et gyldigt kontonummer");
-            }         
+            }
         }
 
         public void PrintAccountInfo(int? count)
@@ -248,7 +251,7 @@ namespace ConnectToSqlWithCSharp
 
         public void AddAccount()
         {
-         
+
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
             conn.Open();
@@ -261,18 +264,18 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine("\nKunde eksisterer ikke");
                 return;
             }
-            
+
             Write("\nIndtast den kontotype du vil oprette: \n");
 
             // udskriv alle kontotyper
-            SqlCommand selAccTypes = new SqlCommand("SELECT AccountTypeName FROM AccountTypes", conn);         
+            SqlCommand selAccTypes = new SqlCommand("SELECT AccountTypeName FROM AccountTypes", conn);
             SqlDataReader reader = selAccTypes.ExecuteReader();
 
             while (reader.Read())
             {
                 Console.WriteLine(reader.GetString(0)); //udskriv resultaterne
             }
-            
+
             reader.Close();
 
             Write("\nIndtastning: ");
@@ -284,13 +287,13 @@ namespace ConnectToSqlWithCSharp
 
             //Get highest existing Account Number
             SqlCommand selAccMax = new SqlCommand("SELECT TOP (1) [AccountNo] FROM [dbo].[Accounts] ORDER BY [AccountNo] DESC", conn);
-           
+
             int? accMax = (int?)selAccMax.ExecuteScalar() + 1; // fejler hvis der ikke eksisterer nogen konti i forvejen
 
             if (accMax == null)
             {
                 accMax = 1000;
-            } 
+            }
 
             //Insert
             SqlCommand addAccCMD = new SqlCommand("INSERT INTO Accounts (CustomerID, AccountNo, AccountTypeId) VALUES (@custID, @accMax, @accTypeID)", conn);
@@ -302,36 +305,34 @@ namespace ConnectToSqlWithCSharp
 
             conn.Close();
         }
-        
+
         public void DeleteAccount()
         {
-            
+            //denne metode sletter en konto
 
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
-            //TODO error checks
-            // TODO spørg om mange er sikker
+            // TODO spørg om man er sikker ang. sletning
             // info om hvad man sletter
 
-            SqlCommand selAccID = new SqlCommand("SELECT AccountID FROM Accounts WHERE AccountNo=@accNo", conn);
+            SqlCommand selAccID = new SqlCommand("SELECT AccountID FROM Accounts WHERE AccountNo=@accNo", conn); // hent accountno fra databasen
 
             selAccID.Parameters.Add("@accNo", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
             selAccID.Parameters["@accNo"].Value = accountno;
             conn.Open();
             try
             {
-                
                 int accountDeleted = (Int32)selAccID.ExecuteScalar();
 
-                if (accountDeleted > 0)
+                if (accountDeleted > 0) // hvis SQL kommandoen "selAccID" returnere en værdi, antag at denne værdi er et kontonummer
                 {
-                    SqlCommand delTrans = new SqlCommand("DELETE FROM Transactions WHERE AccountID=@accountDeleted", conn);
+                    SqlCommand delTrans = new SqlCommand("DELETE FROM Transactions WHERE AccountID=@accountDeleted", conn); // slet alle transaktioner tilhørende kontonummeret
 
                     delTrans.Parameters.Add("@accountDeleted", System.Data.SqlDbType.Int);
                     delTrans.Parameters["@accountDeleted"].Value = accountDeleted;
                     delTrans.ExecuteNonQuery();
 
-                    SqlCommand delAcc = new SqlCommand("DELETE FROM Accounts WHERE AccountID=@accountDeleted", conn);
+                    SqlCommand delAcc = new SqlCommand("DELETE FROM Accounts WHERE AccountID=@accountDeleted", conn); // slet til sidst kontoen
 
                     delAcc.Parameters.Add("@accountDeleted", System.Data.SqlDbType.Int);
                     delAcc.Parameters["@accountDeleted"].Value = accountDeleted;

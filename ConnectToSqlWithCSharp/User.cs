@@ -28,7 +28,7 @@ namespace ConnectToSqlWithCSharp
                 userid = value;
             }
         }
-        
+
         public string Username
         {
             get
@@ -56,13 +56,14 @@ namespace ConnectToSqlWithCSharp
 
         public bool UserCheck()
         {
+            // Tjekker på brugernavnet om brugeren eksisterer når man prøver at logge ind
 
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
             conn.Open();
             SqlCommand checkExistence = new SqlCommand("SELECT COUNT(*) Username FROM Users WHERE Username = @uName", conn);
 
-           
+
 
             checkExistence.Parameters.Add(new SqlParameter("@uName", username));
 
@@ -76,15 +77,18 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine("\nBruger eksisterer ikke\n");
                 ResetColor();
                 return false;
-            } else
+            }
+            else
             {
                 return true;
-            }         
-            
+            }
+
         }
 
         public bool UserAuth()
         {
+            // Tjekker at brugerens indtastede password matcher det i databasen
+
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
             string encryptedPassword = Encryptor.MD5Hash(userpassword);
@@ -105,7 +109,8 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine("\nForkert adgangskode");
                 ResetColor();
                 return false;
-            } else
+            }
+            else
             {
                 conn.Open();
                 SqlCommand addLogging = new SqlCommand("INSERT INTO UserLogging (UserID) VALUES ((SELECT UserID FROM Users WHERE Username = @uName))", conn);
@@ -123,6 +128,7 @@ namespace ConnectToSqlWithCSharp
 
         public bool AddUserCheck()
         {
+            // Tjekker at brugernavnet ikke allerede eksisterer i databasen
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
             conn.Open();
@@ -132,7 +138,7 @@ namespace ConnectToSqlWithCSharp
 
             checkExistence.Parameters.Add(new SqlParameter("@uName", username));
 
-            int userExist = (int)checkExistence.ExecuteScalar();
+            int userExist = (int)checkExistence.ExecuteScalar(); // Eksekverer query og returnere første kolonne i første row
 
             conn.Close();
 
@@ -151,10 +157,11 @@ namespace ConnectToSqlWithCSharp
             }
 
         }
-    
+
 
         public void AddUser()
         {
+            // Tilføjer en bruger til databasen, brugernavnet og adgangskoden er allerede blevet tjekket før dette punkt
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
             string encryptedPassword = Encryptor.MD5Hash(userpassword);
@@ -168,7 +175,7 @@ namespace ConnectToSqlWithCSharp
 
             Console.WriteLine("\nBrugeren {0} er blevet oprettet", username);
 
-          
+
         }
 
         public static bool IsAllLettersOrDigits(string s)
@@ -183,6 +190,7 @@ namespace ConnectToSqlWithCSharp
 
         public static string GetConsolePassword()
         {
+            // Denne metode tilføjer stjerner til det indtastede password
             StringBuilder sb = new StringBuilder();
             while (true)
             {

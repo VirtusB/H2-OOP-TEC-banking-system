@@ -15,20 +15,13 @@ namespace ConnectToSqlWithCSharp
 {
     public static class Program
     {
-
-
-
-        public static string linjeFormat = "──────────────────────────────────────────────────────────────────────────────────────";
+        public static string linjeFormat = "──────────────────────────────────────────────────────────────────────────────────────"; //linje som bruges til formattering
         public static string Navn; // navn til SQL connection metode i 'VoresServere' klassen
-        public static bool userExist;
-
+        public static bool userExist = true; //global variabel
 
         public static void Main()
         {
-
-
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            
 
             #region Select server
             Console.WriteLine("Please enter the number of which users server you are using, to make connectionstring correct.\n1: Virtus\n2: Bjarke\n3: Morten");
@@ -80,7 +73,7 @@ namespace ConnectToSqlWithCSharp
 
 
             do
-            {          
+            {
                 Console.Write("\nIndtast adgangskode: ");
                 //user.UserPassword = Console.ReadLine();       
                 user.UserPassword = User.GetConsolePassword();
@@ -93,28 +86,20 @@ namespace ConnectToSqlWithCSharp
             Console.Clear();
 
             DateTime timeLoggedIn = DateTime.Now;
+            string currentlyLoggedIn = user.Username;
 
             #endregion
-            
-            
 
-            
-
-            Customer customer = new Customer();
-            Account account = new Account();
-            Transaction transaction = new Transaction();
-            AccountType accountType = new AccountType();
-            
-
-
-            
-
+            Customer customer = new Customer(); //initialiser customer objekt
+            Account account = new Account(); // initialiser account object
+            Transaction transaction = new Transaction(); // initialiser transation objekt
+            AccountType accountType = new AccountType(); // initialiser accountType objekt
 
             // Menu start
-            bool done = false;
+            bool done = false;  // udskriv menuen så længe at done ikke er true
             do
             {
-                Console.WriteLine("{1} \tLogget ind som: {0}", user.Username, timeLoggedIn);
+                Console.WriteLine("{1} \tLogget ind som: {0}", currentlyLoggedIn, timeLoggedIn); // udskriv nuværende bruger samt dato for login
                 Console.WriteLine(Program.linjeFormat);
                 Console.WriteLine("Vælg en mulighed:");
                 Console.WriteLine("\t1) Vis kunde");
@@ -127,7 +112,7 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine("\t8) Vis transaktioner");
                 Console.WriteLine("\t9) Opret transaktion");
                 Console.WriteLine("\t10) Opret ny kontotype");
-                Console.WriteLine("\t11) Opret ny bruger");             
+                Console.WriteLine("\t11) Opret ny bruger");
                 Console.Write("Indtast valgmulighed (0 for at afslutte): ");
                 string strSelection = Console.ReadLine();
                 int iSel;
@@ -362,7 +347,7 @@ namespace ConnectToSqlWithCSharp
                         #endregion
 
                         #region Tjek kodeord og tilføj bruger
-                        
+
 
                         string duplicatePass = "placeholderDup";
                         string inputPassword = "placeholder";
@@ -388,12 +373,13 @@ namespace ConnectToSqlWithCSharp
                                 {
                                     user.UserPassword = inputPassword;
                                     user.AddUser();
-                                } else
+                                }
+                                else
                                 {
                                     ForegroundColor = ConsoleColor.Red;
                                     Console.WriteLine("\nIndtastede adgangskoder ikke ens");
                                     ResetColor();
-                                    
+
                                 }
                             }
                         }
@@ -408,9 +394,6 @@ namespace ConnectToSqlWithCSharp
                 Console.WriteLine();
             } while (!done);
             Console.WriteLine("\nFarvel!");
-
-
-
         }
         // Menu slut
     }
