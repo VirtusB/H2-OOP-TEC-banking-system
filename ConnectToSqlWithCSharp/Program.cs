@@ -25,7 +25,7 @@ namespace ConnectToSqlWithCSharp
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             #region Select server
-            Console.WriteLine("Please enter the number of which users server you are using, to make connectionstring correct.\n1: Virtus\n2: Bjarke\n3: Morten");
+            Console.WriteLine("Please enter the number of which user server you are using, to make connectionstring correct.\n1: Virtus\n2: Bjarke\n3: Morten");
             string navnInput = Console.ReadLine();
             try
             {

@@ -483,7 +483,7 @@ namespace ConnectToSqlWithCSharp
             int customerOprettet = cmd.ExecuteNonQuery();
             if (customerOprettet > 0)
             {
-                Console.WriteLine("Oprettet kunden: " + firstname + " " + lastname);
+                Console.WriteLine("\nOprettet kunden: " + firstname + " " + lastname);
             }
             else
             {
@@ -505,15 +505,33 @@ namespace ConnectToSqlWithCSharp
 
             conn.Open();
 
-            int custDeletion = (Int32)delCust.ExecuteNonQuery();
-            if (custDeletion > 0)
+            Write("\nEr du sikker på at du vil slette kundenummer {0}?\n", customerid);
+            Write("Tast JA for at fortsætte, tast NEJ for at afbryde: ");
+            string confirmDeletion = Console.ReadLine();
+            
+
+
+            if (confirmDeletion == "JA") // spørg om man er sikker på sletning på kunde
             {
-                Console.WriteLine("\nDu har slettet kundenummer {0}", customerid);
+                int custDeletion = (Int32)delCust.ExecuteNonQuery();
+                if (custDeletion > 0)
+                {
+                    Console.WriteLine("\nDu har slettet kundenummer {0}", customerid);
+                }
+                else
+                {
+                    Console.WriteLine("\nKunde med kundenummer {0} ikke fundet", customerid);
+                }
+            } else if (confirmDeletion == "NEJ")
+            {
+                Console.WriteLine("\nDu har afbrudt sletning");
             }
             else
             {
-                Console.WriteLine("\nKunde med kundenummer {0} ikke fundet", customerid);
+                Console.WriteLine("\nDu skal enten indtaste JA eller NEJ, småt er ikke tilladt");
             }
+
+
 
             conn.Close();
         }

@@ -288,7 +288,7 @@ namespace ConnectToSqlWithCSharp
             //Get highest existing Account Number
             SqlCommand selAccMax = new SqlCommand("SELECT TOP (1) [AccountNo] FROM [dbo].[Accounts] ORDER BY [AccountNo] DESC", conn);
 
-            int? accMax = (int?)selAccMax.ExecuteScalar() + 1; // fejler hvis der ikke eksisterer nogen konti i forvejen
+            int? accMax = (int?)selAccMax.ExecuteScalar() + 1; 
 
             if (accMax == null)
             {
@@ -320,26 +320,47 @@ namespace ConnectToSqlWithCSharp
             selAccID.Parameters.Add("@accNo", System.Data.SqlDbType.Int); // tilføj parameter til vores SQL string
             selAccID.Parameters["@accNo"].Value = accountno;
             conn.Open();
+
             try
             {
                 int accountDeleted = (Int32)selAccID.ExecuteScalar();
 
-                if (accountDeleted > 0) // hvis SQL kommandoen "selAccID" returnere en værdi, antag at denne værdi er et kontonummer
+                Write("\nEr du sikker på at du vil slette kontunummer {0}?\n", accountno);
+                Write("Tast JA for at fortsætte, tast NEJ for at afbryde: ");
+                string confirmDeletion = Console.ReadLine();
+
+
+
+                if (confirmDeletion == "JA") // spørg om man er sikker på sletning på kunde
                 {
-                    SqlCommand delTrans = new SqlCommand("DELETE FROM Transactions WHERE AccountID=@accountDeleted", conn); // slet alle transaktioner tilhørende kontonummeret
+                    if (accountDeleted > 0) // hvis SQL kommandoen "selAccID" returnere en værdi, antag at denne værdi er et kontonummer
+                    {
+                        SqlCommand delTrans = new SqlCommand("DELETE FROM Transactions WHERE AccountID=@accountDeleted", conn); // slet alle transaktioner tilhørende kontonummeret
 
-                    delTrans.Parameters.Add("@accountDeleted", System.Data.SqlDbType.Int);
-                    delTrans.Parameters["@accountDeleted"].Value = accountDeleted;
-                    delTrans.ExecuteNonQuery();
+                        delTrans.Parameters.Add("@accountDeleted", System.Data.SqlDbType.Int);
+                        delTrans.Parameters["@accountDeleted"].Value = accountDeleted;
+                        delTrans.ExecuteNonQuery();
 
-                    SqlCommand delAcc = new SqlCommand("DELETE FROM Accounts WHERE AccountID=@accountDeleted", conn); // slet til sidst kontoen
+                        SqlCommand delAcc = new SqlCommand("DELETE FROM Accounts WHERE AccountID=@accountDeleted", conn); // slet til sidst kontoen
 
-                    delAcc.Parameters.Add("@accountDeleted", System.Data.SqlDbType.Int);
-                    delAcc.Parameters["@accountDeleted"].Value = accountDeleted;
-                    delAcc.ExecuteNonQuery();
+                        delAcc.Parameters.Add("@accountDeleted", System.Data.SqlDbType.Int);
+                        delAcc.Parameters["@accountDeleted"].Value = accountDeleted;
+                        delAcc.ExecuteNonQuery();
 
-                    Console.WriteLine("Kontonummer {0} blev slettet", accountno);
+                        Console.WriteLine("\nKontonummer {0} blev slettet", accountno);
+                    }
                 }
+                else if (confirmDeletion == "NEJ")
+                {
+                    Console.WriteLine("\nDu har afbrudt sletning");
+                } else
+                {
+                    Console.WriteLine("\nDu skal enten indtaste JA eller NEJ, småt er ikke tilladt");
+                }
+
+                
+
+
             }
             catch
             {
