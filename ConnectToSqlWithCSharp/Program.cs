@@ -19,7 +19,8 @@ namespace ConnectToSqlWithCSharp
 
 
         public static string linjeFormat = "──────────────────────────────────────────────────────────────────────────────────────";
-        public static string Navn; // navn til SQL connection metode i 'VoresServere' klassen 
+        public static string Navn; // navn til SQL connection metode i 'VoresServere' klassen
+        public static bool userExist;
 
 
         public static void Main()
@@ -73,7 +74,8 @@ namespace ConnectToSqlWithCSharp
             do
             {
                 Console.Write("Indtast brugernavn: ");
-                user.Username = Console.ReadLine();              
+                user.Username = Console.ReadLine();
+
             } while (user.UserCheck() != true);
 
 
@@ -89,6 +91,8 @@ namespace ConnectToSqlWithCSharp
             ResetColor();
             Thread.Sleep(850);
             Console.Clear();
+
+            DateTime timeLoggedIn = DateTime.Now;
 
             #endregion
             
@@ -110,6 +114,8 @@ namespace ConnectToSqlWithCSharp
             bool done = false;
             do
             {
+                Console.WriteLine("{1} \tLogget ind som: {0}", user.Username, timeLoggedIn);
+                Console.WriteLine(Program.linjeFormat);
                 Console.WriteLine("Vælg en mulighed:");
                 Console.WriteLine("\t1) Vis kunde");
                 Console.WriteLine("\t2) Tilføj kunde");
@@ -328,6 +334,72 @@ namespace ConnectToSqlWithCSharp
                     case 11:
                         Console.Clear();
                         Console.WriteLine("Opret ny bruger\n");
+
+                        #region Tjek om bruger eksisterer inkl. error checks
+                        do
+                        {
+                            Write("Indtast brugernavn: ");
+                            string inputUsername = Console.ReadLine();
+
+                            if (inputUsername == "")
+                            {
+                                Console.WriteLine("Brugernavn må ikke være tomt");
+                            }
+                            else if (inputUsername.Length < 4)
+                            {
+                                Console.WriteLine("Brugernavn skal være på mindst 4 karakterer");
+                            }
+                            else if (User.IsAllLettersOrDigits(inputUsername) != true)
+                            {
+                                Console.WriteLine("Brugernavn må ikke indeholde specielle tegn");
+                            }
+                            else
+                            {
+                                user.Username = inputUsername;
+                                user.AddUserCheck();
+                            }
+                        } while (Program.userExist == true);
+                        #endregion
+
+                        #region Tjek kodeord og tilføj bruger
+                        
+
+                        string duplicatePass = "placeholderDup";
+                        string inputPassword = "placeholder";
+
+                        while (duplicatePass != inputPassword)
+                        {
+                            Write("\nIndtast adgangskode: ");
+                            inputPassword = User.GetConsolePassword();
+
+                            if (inputPassword == "")
+                            {
+                                Console.WriteLine("Adgangskode må ikke være blank");
+                            }
+                            else if (inputPassword.Length < 6)
+                            {
+                                Console.WriteLine("Adgangskode skal være på mindst 6 karakterer");
+                            }
+                            else
+                            {
+                                Console.Write("\nBekræft adgangskode: ");
+                                duplicatePass = User.GetConsolePassword();
+                                if (duplicatePass == inputPassword)
+                                {
+                                    user.UserPassword = inputPassword;
+                                    user.AddUser();
+                                } else
+                                {
+                                    ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("\nIndtastede adgangskoder ikke ens");
+                                    ResetColor();
+                                    
+                                }
+                            }
+                        }
+
+                        #endregion
+
                         break;
                     default:
                         Console.WriteLine("Forkert, vælg en korrekt mulighed: {0}\r\n", iSel);
