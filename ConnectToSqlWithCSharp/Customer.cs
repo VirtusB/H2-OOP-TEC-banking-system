@@ -517,5 +517,125 @@ namespace ConnectToSqlWithCSharp
 
             conn.Close();
         }
+
+        public void EditCustomer()
+        {
+            //denne metode redigerer en kunde
+            SqlConnection conn = VoresServere.WhichServer(Program.Navn);
+            conn.Open();
+
+            //sqlcommand til fornavn
+            SqlCommand editFirstnameCmd = new SqlCommand("UPDATE Customers SET FirstName = @firstName WHERE CustomerID = @custID", conn);
+            editFirstnameCmd.Parameters.Add(new SqlParameter("@firstName", firstname));
+            editFirstnameCmd.Parameters.Add(new SqlParameter("@custID", customerid));
+
+            //sqlcommand til efternavn
+            SqlCommand editLastnameCmd = new SqlCommand("UPDATE Customers SET LastName = @lastName WHERE CustomerID = @custID", conn);
+            editLastnameCmd.Parameters.Add(new SqlParameter("@lastName", lastname));
+            editLastnameCmd.Parameters.Add(new SqlParameter("@custID", customerid));
+
+            //sqlcommand til adresse
+            SqlCommand editAddressCmd = new SqlCommand("UPDATE Customers SET Address = @address WHERE CustomerID = @custID", conn);
+            editAddressCmd.Parameters.Add(new SqlParameter("@address", address));
+            editAddressCmd.Parameters.Add(new SqlParameter("@custID", customerid));
+
+            //sqlcommand til by
+            SqlCommand editCityCmd = new SqlCommand("UPDATE Customers SET City = @city WHERE CustomerID = @custID", conn);
+            editCityCmd.Parameters.Add(new SqlParameter("@city", city));
+            editCityCmd.Parameters.Add(new SqlParameter("@custID", customerid));
+
+            //sqlcommand til postnr
+            SqlCommand editPostalCodeCmd = new SqlCommand("UPDATE Customers SET PostalCode = @postalCode WHERE CustomerID = @custID", conn);
+            editPostalCodeCmd.Parameters.Add(new SqlParameter("@postalCode", postalcode));
+            editPostalCodeCmd.Parameters.Add(new SqlParameter("@custID", customerid));
+
+            #region error checks og udfør commands
+            if (Program.valueToEdit == 1)
+            {
+                if (firstname.Length >= 2 && !double.TryParse(firstname, out double tempCustFName) && tempCustFName != 1)
+                {
+                    int firstNameEdited = editFirstnameCmd.ExecuteNonQuery();
+                    if (firstNameEdited > 0)
+                    {
+                        Console.WriteLine("\nSuccess. Fornavn opdateret til {0}", firstname);
+                    }
+                } else
+                {
+                    Console.WriteLine("\nIndtast et gyldigt fornavn. Ingen tal og mindst 2 karakterer");
+                }
+                
+
+            }
+            else if (Program.valueToEdit == 2)
+            {
+                if (lastname.Length >= 2 && !double.TryParse(lastname, out double tempCustLName) && tempCustLName != 1)
+                {
+                    int lastNameEdited = editLastnameCmd.ExecuteNonQuery();
+                    if (lastNameEdited > 0)
+                    {
+                        Console.WriteLine("\nSuccess. Efternavn opdateret til {0}", lastname);
+                    }
+                } else
+                {
+                    Console.WriteLine("\nIndtast et gyldigt efternavn. Ingen tal og mindst 2 karakterer");
+                }
+                
+            }
+            else if (Program.valueToEdit == 3)
+            {
+                if (address.Length >= 4 && !double.TryParse(address, out double tempCustAddr) && tempCustAddr != 1)
+                {
+                    int addressEdited = editAddressCmd.ExecuteNonQuery();
+                    if (addressEdited > 0)
+                    {
+                        Console.WriteLine("\nSuccess. Adresse opdateret til {0}", address);
+                    }
+                } else
+                {
+                    Console.WriteLine("\nIndtast en gyldig adresse. Mindst 4 karakterer");
+                }
+                
+            }
+            else if (Program.valueToEdit == 4)
+            {
+                if (city.Length >= 2 && !double.TryParse(city, out double tempCustCity) && tempCustCity != 1)
+                {
+                    int cityEdited = editCityCmd.ExecuteNonQuery();
+                    if (cityEdited > 0)
+                    {
+                        Console.WriteLine("\nSuccess. By opdateret til {0}", city);
+                    }
+                } else
+                {
+                    Console.WriteLine("\nIndtast en gyldig adresse. Mindst 2 karakterer");
+                }
+                
+            }
+            else if (Program.valueToEdit == 5)
+            {
+                if (postalcode.ToString().Length == 4)
+                {
+                    int postalCodeEdited = editPostalCodeCmd.ExecuteNonQuery();
+                    if (postalCodeEdited > 0)
+                    {
+                        Console.WriteLine("\nSuccess. Postnr opdateret til {0}", postalcode);
+                    }
+                } else
+                {
+                    Console.WriteLine("Indtast et gyldigt postnr. Skal være 4 tal");
+                }
+                
+            } else
+            {
+                Console.WriteLine("Fejl i redigering");
+            }
+            #endregion
+
+
+
+
+            conn.Close();
+
+        }
     }
 }

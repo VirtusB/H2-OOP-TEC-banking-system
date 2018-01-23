@@ -18,6 +18,7 @@ namespace ConnectToSqlWithCSharp
         public static string linjeFormat = "──────────────────────────────────────────────────────────────────────────────────────"; //linje som bruges til formattering
         public static string Navn; // navn til SQL connection metode i 'VoresServere' klassen
         public static bool userExist = true; //global variabel
+        public static int valueToEdit;
 
         public static void Main()
         {
@@ -99,13 +100,14 @@ namespace ConnectToSqlWithCSharp
             bool done = false;  // udskriv menuen så længe at done ikke er true
             do
             {
+                Console.Clear();
                 Console.WriteLine("{1} \tLogget ind som: {0}", currentlyLoggedIn, timeLoggedIn); // udskriv nuværende bruger samt dato for login
                 Console.WriteLine(Program.linjeFormat);
                 Console.WriteLine("Vælg en mulighed:");
                 Console.WriteLine("\t1) Vis kunde");
                 Console.WriteLine("\t2) Tilføj kunde");
                 Console.WriteLine("\t3) Slet kunde");
-                Console.WriteLine("\t4) Rediger kunde - IKKE IMPLEMENTERET");
+                Console.WriteLine("\t4) Rediger kunde");
                 Console.WriteLine("\t5) Vis konti");
                 Console.WriteLine("\t6) Opret Konto");
                 Console.WriteLine("\t7) Slet konto fra kunde");
@@ -126,7 +128,7 @@ namespace ConnectToSqlWithCSharp
                     continue;
                 }
                 Console.Clear();
-                Console.WriteLine("Du valgte " + iSel);
+
                 switch (iSel)
                 {
                     case 0:
@@ -232,8 +234,94 @@ namespace ConnectToSqlWithCSharp
                         #endregion
                         break;
                     case 4:
-                        Console.Clear();
-                        Console.WriteLine("Rediger en kunde - IKKE IMPLEMENTERET");
+                        Console.WriteLine("Rediger en kunde");
+                        #region kode + errorchecks
+                        Write("\nIndtast kunde nummer, som du vil redigere: ");
+                        string strCustID = Console.ReadLine();
+
+                        if (int.TryParse(strCustID, out int tempCustID))
+                        {
+                            customer.CustomerID = tempCustID;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Indtast et gyldigt kunde nummer");
+                        }
+
+                        bool customerEditDone = false;
+                        do
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Rediger en kunde");
+                            WriteLine("1) Rediger fornavn\n2) Rediger efternavn\n3) Rediger adresse\n4) Rediger by\n5) Rediger postnr.\n0) Afslut redigering\n");
+
+                            Write("Indtastning: ");
+                            string strValueToEdit = Console.ReadLine();
+
+                            try
+                            {
+                                valueToEdit = int.Parse(strValueToEdit);
+                            }
+                            catch (FormatException)
+                            {
+                                Console.WriteLine("\r\nIkke et gyldigt valg?\r\n");
+                                continue;
+                            }
+
+                            switch (valueToEdit)
+                            {
+                                case 1:
+                                    Write("\nFornavn: ");
+                                    customer.FirstName = Console.ReadLine();
+                                    customer.EditCustomer();
+                                    Thread.Sleep(2000);
+
+                                    break;
+                                case 2:
+                                    Write("\nEfternavn: ");
+                                    customer.LastName = Console.ReadLine();
+                                    customer.EditCustomer();
+                                    Thread.Sleep(2000);
+                                    break;
+                                case 3:
+                                    Write("\nAdresse: ");
+                                    customer.Address = Console.ReadLine();
+                                    customer.EditCustomer();
+                                    Thread.Sleep(2000);
+                                    break;
+                                case 4:
+                                    Write("\nBy: ");
+                                    customer.City = Console.ReadLine();
+                                    customer.EditCustomer();
+                                    Thread.Sleep(2000);
+                                    break;
+                                case 5:
+                                    Write("\nPostnr: ");
+                                    //customer.PostalCode = Convert.ToInt32(Console.ReadLine());
+                                    tempPostalCode = Console.ReadLine();
+                                    int.TryParse(tempPostalCode, out postalValid);
+                                    if (postalValid.ToString().Length == 4)
+                                    {
+                                        customer.PostalCode = postalValid;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("\nUgyldigt postnummer. Skal være 4 tal");
+                                        Thread.Sleep(2000);
+                                        break;
+                                    }
+                                    customer.EditCustomer();
+                                    Thread.Sleep(2000);
+                                    break;
+                                case 0:
+                                    customerEditDone = true;
+                                    break;
+                                default:
+                                    Console.WriteLine("Ikke et gyldigt valg");
+                                    continue;
+                            }
+                        } while (!customerEditDone);
+                        #endregion
                         break;
                     case 5:
                         Console.Clear();
@@ -246,8 +334,8 @@ namespace ConnectToSqlWithCSharp
                         #region kode + errorchecks
                         Write("\nIndtast kunde nummer, som du vil oprette en konto for: ");
 
-                        string strCustID = Console.ReadLine();
-                        if (int.TryParse(strCustID, out int tempCustID))
+                        strCustID = Console.ReadLine();
+                        if (int.TryParse(strCustID, out tempCustID))
                         {
                             account.CustomerID = tempCustID;
                             account.AddAccount();
