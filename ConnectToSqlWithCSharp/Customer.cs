@@ -320,10 +320,10 @@ namespace ConnectToSqlWithCSharp
                         "\n(Tilføj -knr for at sortere efter konto-nr)");
 
                     Console.WriteLine("\n");
-                    Console.WriteLine("Kunde-ID\tNavn\tAdresse");
+                    Console.WriteLine("Kunde-ID\tNavn\t\t\tAdresse");
                     foreach (var customer in listOfCustomers)
                     {
-                        Console.WriteLine("{0}\t{1}\t{2}",
+                        Console.WriteLine("{0}\t\t{1}\t\t{2}",
                             customer.CustomerID.ToString(),
                             customer.FirstName + " " + customer.LastName,
                             customer.Address + " " + customer.City + " " + customer.PostalCode);
