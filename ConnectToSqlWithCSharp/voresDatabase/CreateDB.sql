@@ -101,14 +101,15 @@ GO
 
 CREATE TABLE Users (
 	UserID int IDENTITY(1,1) PRIMARY KEY,
+	Created DATETIME default GETDATE(),
 	UserName nvarchar(50) NOT NULL,
 	UserPassword nvarchar(32) NOT NULL
 	)
 GO
 
 INSERT INTO Users (UserName, UserPassword)
-VALUES ('bruger', '5f4dcc3b5aa765d61d8327deb882cf99'),
-	   ('Direktør', 'af17c5f7aabbd372b24c2000890ecd28')
+VALUES ('bruger', '5f4dcc3b5aa765d61d8327deb882cf99')
+	   
 
 
 CREATE TABLE UserLogging (
@@ -119,14 +120,13 @@ CREATE TABLE UserLogging (
 GO
 
 INSERT INTO USerLogging (UserId)
-VALUES (1),
-		(2)
+VALUES (1)
+		
 	
 INSERT INTO USerLogging (UserId,timestamp)
 VALUES (1, '2018-01-20'),
-	   (1, '2018-01-20'),
-	   (2, '2017-12-31'),
-	   (2, '2018-01-01')
+	   (1, '2018-01-20')
+	   
 		
 	
 
