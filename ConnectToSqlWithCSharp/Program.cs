@@ -100,7 +100,7 @@ namespace ConnectToSqlWithCSharp
             bool done = false;  // udskriv menuen så længe at done ikke er true
             do
             {
-                Console.Clear();
+                //Console.Clear();
                 Console.WriteLine("{1} \tLogget ind som: {0}", currentlyLoggedIn, timeLoggedIn); // udskriv nuværende bruger samt dato for login
                 Console.WriteLine(Program.linjeFormat);
                 Console.WriteLine("Vælg en mulighed:");
@@ -131,7 +131,7 @@ namespace ConnectToSqlWithCSharp
 
                 switch (iSel)
                 {
-                    case 0:
+                    case 0:       
                         done = true;
                         break;
                     case 1:
@@ -314,6 +314,7 @@ namespace ConnectToSqlWithCSharp
                                     Thread.Sleep(2000);
                                     break;
                                 case 0:
+                                    Console.Clear();
                                     customerEditDone = true;
                                     break;
                                 default:
@@ -342,7 +343,7 @@ namespace ConnectToSqlWithCSharp
                         }
                         else
                         {
-                            Console.WriteLine("Indtast et gyldigt kunde nummer");
+                            Console.WriteLine("\nIndtast et gyldigt kunde nummer");
                         }
                         #endregion
                         break;
