@@ -349,7 +349,8 @@ namespace ConnectToSqlWithCSharp
                         break;
                     case 7:
                         Console.Clear();
-                        Console.Write("Indtast kontonr: ");
+                        Console.WriteLine("Slet en konto\n");
+                        Console.Write("Indtast kontonr: ");                
                         #region kode + errorchecks
                         // tjek konto nummer
                         string strAccNo = Console.ReadLine();
