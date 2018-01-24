@@ -53,10 +53,13 @@ namespace ConnectToSqlWithCSharp
 
         public void AddAccountType()
         {
+            //metode som tilføjer en ny kontotype
+            //navn og rentesats skal indtastes
+
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
             conn.Open();
-            SqlCommand addAccType = new SqlCommand("INSERT INTO AccountTypes (AccountTypeName, InterestRate) VALUES (@accTypeName, @accTypeInterestRate)", conn);        
+            SqlCommand addAccType = new SqlCommand("INSERT INTO AccountTypes (AccountTypeName, InterestRate) VALUES (@accTypeName, @accTypeInterestRate)", conn);
             addAccType.Parameters.Add(new SqlParameter("@accTypeName", accounttypename));
             addAccType.Parameters.Add(new SqlParameter("@accTypeInterestRate", interestrate));
 
