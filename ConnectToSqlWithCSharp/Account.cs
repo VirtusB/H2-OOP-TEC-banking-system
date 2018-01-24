@@ -138,7 +138,7 @@ namespace ConnectToSqlWithCSharp
 
             Console.WriteLine("Indtast kontonr. for at se en specifik konto");
             Console.WriteLine("Tryk ENTER for at se alle konti");
-            Console.WriteLine("Indtast \"overtræk\" for udelukkende at se konti med overtræk");
+            Console.WriteLine("Indtast \"overtræk\" eller \"ot\" for udelukkende at se konti med overtræk");
 
             string showAccountsChoice = Console.ReadLine(); // hvis int, vis specifik konto ellers vis alle konti
 
@@ -199,7 +199,7 @@ namespace ConnectToSqlWithCSharp
                 reader.Close();
                 conn.Close();
             }
-            else if (showAccountsChoice.ToLower() == "overtræk")
+            else if (showAccountsChoice.ToLower() == "overtræk" || showAccountsChoice.ToLower() == "ot")
             {
                 SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
