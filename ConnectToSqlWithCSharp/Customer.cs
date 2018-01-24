@@ -328,8 +328,9 @@ namespace ConnectToSqlWithCSharp
                             customer.FirstName + " " + customer.LastName,
                             customer.Address + " " + customer.City + " " + customer.PostalCode);
                     }
-
+                    Write("\nIndtastning: ");                 
                     showCustomerChoice = Console.ReadLine();
+                    WriteLine("\n" + Program.linjeFormat);
                     if (showCustomerChoice != "" && IsDigitsOnly(showCustomerChoice))
                     {
                         listOfCustomers.RemoveAll(x => x.CustomerID.ToString() != showCustomerChoice);
@@ -340,7 +341,7 @@ namespace ConnectToSqlWithCSharp
                     }
                     else
                     {
-                        foreach (var customer in listOfCustomers)
+                        foreach (var customer in listOfCustomers.ToList())
                         {
                             //If all fields concatenated with spaces doesn't contain the search string, remove it from the listOfCustomers
                             if (!(customer.FirstName + " " +
