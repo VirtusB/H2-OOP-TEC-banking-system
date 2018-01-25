@@ -10,7 +10,7 @@ namespace ConnectToSqlWithCSharp
 {
     public class Customer
     {
-        #region setters & getters
+        #region private attributes
         private int customerid;
         private DateTime created;
         private string firstname;
@@ -19,8 +19,9 @@ namespace ConnectToSqlWithCSharp
         private string city;
         private int postalcode;
         private bool active;
+        #endregion
 
-
+        #region getters and setters
         public int CustomerID
         {
             get
@@ -145,8 +146,10 @@ namespace ConnectToSqlWithCSharp
             bool knrSorting = (showCustomerChoice.Contains("-knr"));
             int accountCounter = 1;
             Customer customerForKnrSorting = new Customer();
-
+            bool customerChangedOnIteration = false;
+            
             showCustomerChoice = showCustomerChoice.Replace("-knr", "");
+            showCustomerChoice = showCustomerChoice.Trim();
 
             SqlConnection conn = VoresServere.WhichServer(Program.Navn);
 
@@ -158,13 +161,14 @@ namespace ConnectToSqlWithCSharp
             SqlCommand accountCmd = new SqlCommand();
             customerCmd.Connection = conn;
             accountCmd.Connection = conn;
-            if (showCustomerChoice == "") // en tom string antages at være ENTER
+            conn.Open();
+
+            //Empty - show all
+            if (showCustomerChoice == "")
             {
-                //TODO: Add sorting if knrSorting is true (if -knr is written)
-                //TODO: Mode code that is duplicated into private method
+                //TODO: Move code that is duplicated into private method - Now done for printing, readers are a bit more tricky 
                 customerCmd.CommandText = "SELECT * FROM Customers";
                 accountCmd.CommandText = "SELECT * FROM Accounts INNER JOIN [dbo].[AccountTypes] ON Accounts.AccountTypeID = AccountTypes.AccountTypeId";
-                conn.Open();
                 SqlDataReader customerReader = customerCmd.ExecuteReader();
 
                 while (customerReader.Read())
@@ -200,83 +204,8 @@ namespace ConnectToSqlWithCSharp
                     });
                 }
                 accountReader.Close();
-
-                //linq - this will create a new list. Not optimal:
-                //var SortedList = listOfCustomers.OrderBy(x => x.lastname).ToList();
-                //Sort in place can be done with .Sort() so we will do that.
-                if (knrSorting)
-                {
-                    listOfAccounts.Sort((x, y) => x.AccountNo.CompareTo(y.AccountNo));
-                }
-                else
-                {
-                    listOfCustomers.Sort((x, y) => x.LastName.CompareTo(y.LastName));
-                    listOfAccounts.Sort((x, y) => x.AccountNo.CompareTo(y.AccountNo));
-                }
-
-                if (knrSorting)
-                {
-                    for (int i = 0; i < listOfAccounts.Count(); i++)
-                    {
-                        if (customerForKnrSorting.CustomerID != listOfAccounts[i].CustomerID)
-                        {
-                            if (listOfCustomers.Where(x => x.CustomerID == listOfAccounts[i].CustomerID).Count() == 1)
-                            {
-                                customerForKnrSorting = listOfCustomers.Where(x => x.CustomerID == listOfAccounts[i].CustomerID).First();
-                                accountCounter = 1;
-
-                                customerForKnrSorting.PrintCustomerInfo();
-                            }
-                            else
-                            {
-                                throw new Exception("Fejl - flere kunder er tilknyttet samme konto... (Konto-nr: " + listOfAccounts[i].AccountNo + ")");
-                            }
-                        }
-                        else
-                        {
-                            accountCounter++;
-                        }
-
-                        //TODO: Make konti/konto word correct to amount of accounts
-                        if (i > 0)
-                        {
-                            if (listOfAccounts[i].CustomerID != listOfAccounts[i - 1].CustomerID)
-                            {
-                                Console.WriteLine("\nKonti tilhørende {0} {1}: \n", customerForKnrSorting.FirstName, customerForKnrSorting.LastName);
-                            }
-                        }
-
-                        listOfAccounts[i].PrintAccountInfo(accountCounter);
-
-                        if (i + 1 < listOfAccounts.Count())
-                        {
-                            if (listOfAccounts[i + 1].CustomerID != customerForKnrSorting.CustomerID)
-                            {
-                                Console.WriteLine("\n");
-                                WriteLine(Program.linjeFormat);
-                            }
-                        }
-
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < listOfCustomers.Count(); i++)
-                    {
-                        listOfCustomers[i].PrintCustomerInfo();
-
-                        customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
-                        Console.WriteLine("\nKonti tilhørende {0} {1}: ", listOfCustomers[i].FirstName, listOfCustomers[i].LastName);
-                        for (int x = 0; x < customerAccounts.Count(); x++)
-                        {
-                            customerAccounts[x].PrintAccountInfo(i + 1);
-                        }
-                        Console.WriteLine("\n");
-                        WriteLine(Program.linjeFormat);
-                    }
-                }
-                conn.Close();
             }
+            //Input contains searchstring:
             else
             {
                 //Build customers query with WHERE statement as parameter
@@ -285,14 +214,7 @@ namespace ConnectToSqlWithCSharp
 
                 customerCmd.Parameters.Add(new SqlParameter("@showCustomerChoice", showCustomerChoice)); // tilføj parameter til vores SQL string
 
-                //TODO: The old code below does the same as the above. We should consider if other places has code like this that could be changed to the above? 50% reduction
-                //customerCmd.Parameters.Add("@showCustomerChoice", System.Data.SqlDbType.NVarChar);
-                //customerCmd.Parameters["@showCustomerChoice"].Value = showCustomerChoice;
-                //accountCmd.Parameters.Add("@showCustomerChoice", System.Data.SqlDbType.NVarChar); // tilføj parameter til vores SQL string
-                //accountCmd.Parameters["@showCustomerChoice"].Value = showCustomerChoice;
-
                 //Add all matching customers to listOfCustomers
-                conn.Open();
                 SqlDataReader customerReader = customerCmd.ExecuteReader();
                 while (customerReader.Read())
                 {
@@ -310,7 +232,7 @@ namespace ConnectToSqlWithCSharp
                 }
                 customerReader.Close(); // luk reader brugt til Customers
 
-                //if (listOfCustomers.Count() > 1)
+                //Loop for making search more and more specific
                 while (listOfCustomers.Count() > 1 && showAll == false)
                 {
                     //knrSorting = false;
@@ -328,9 +250,16 @@ namespace ConnectToSqlWithCSharp
                             customer.FirstName + " " + customer.LastName,
                             customer.Address + " " + customer.City + " " + customer.PostalCode);
                     }
-                    Write("\nIndtastning: ");                 
+
+                    Write("\nIndtastning: ");
                     showCustomerChoice = Console.ReadLine();
+                    knrSorting = (showCustomerChoice.Contains("-knr"));
+
+                    showCustomerChoice = showCustomerChoice.Replace("-knr", "");
+                    showCustomerChoice = showCustomerChoice.Trim();
+
                     WriteLine("\n" + Program.linjeFormat);
+
                     if (showCustomerChoice != "" && IsDigitsOnly(showCustomerChoice))
                     {
                         listOfCustomers.RemoveAll(x => x.CustomerID.ToString() != showCustomerChoice);
@@ -344,11 +273,11 @@ namespace ConnectToSqlWithCSharp
                         foreach (var customer in listOfCustomers.ToList())
                         {
                             //If all fields concatenated with spaces doesn't contain the search string, remove it from the listOfCustomers
-                            if (!(customer.FirstName + " " +
-                                customer.LastName + " " +
-                                customer.Address + " " +
-                                customer.City + " " +
-                                customer.PostalCode.ToString()).Contains(showCustomerChoice))
+                            if (!(customer.FirstName.ToLower() + " " +
+                                customer.LastName.ToLower() + " " +
+                                customer.Address.ToLower() + " " +
+                                customer.City.ToLower() + " " +
+                                customer.PostalCode.ToString().ToLower()).Contains(showCustomerChoice.ToLower()))
                             {
                                 listOfCustomers.Remove(customer);
                             }
@@ -388,6 +317,7 @@ namespace ConnectToSqlWithCSharp
 
                     //Using parameter.Add didn't work, and google informed that using SqlParameters for WHERE xx IN (...) is not the way to go. Therefore we just added the string as a variable in the command...
                     //We could also have made a method for creating a temporary table in the database, and then added a JOIN to that, but that method is a bit too comprehensive; 
+
                     //we only need it here, and we also expect the user to be good at searching.
 
                     //Now get all the relevant accounts into listOfAccounts
@@ -408,52 +338,102 @@ namespace ConnectToSqlWithCSharp
                         });
                     }
                     accountReader.Close();
-
-                    //Now show the accounts.
-                    for (int i = 0; i < listOfCustomers.Count(); i++)
-                    {
-                        listOfCustomers[i].PrintCustomerInfo();
-
-                        customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
-                        Console.WriteLine("\nKonti tilhørende {0} {1}: ", listOfCustomers[i].FirstName, listOfCustomers[i].LastName);
-                        for (int x = 0; x < customerAccounts.Count(); x++)
-                        {
-                            customerAccounts[i].PrintAccountInfo(i);
-                        }
-                        Console.WriteLine("\n");
-                        WriteLine(Program.linjeFormat);
-                        Console.WriteLine("\n");
-                    }
-                    accountReader.Close();
-                    conn.Close();
                 }
-
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
             }
+
+            //SORT IT
+            if (knrSorting)
+            {
+                listOfAccounts.Sort((x, y) => x.AccountNo.CompareTo(y.AccountNo));
+            }
+            else
+            {
+                listOfCustomers.Sort((x, y) => x.LastName.CompareTo(y.LastName));
+                listOfAccounts.Sort((x, y) => x.AccountNo.CompareTo(y.AccountNo));
+            }
+
+            //PRINT IT
+            //IF KnrSorting is true, sorty by account number. For this a different logic is needed, in case two customers have account numbers between eachother. 
+            //FX Customer 1 might have account 1 and 3 and Customer 2 have account 2 and 4. 
+            //we made it so accounts are definately controlling the order, and customernames will appear twice in this case.
+            if (knrSorting)
+            {
+                //Run through list of accounts
+                for (int i = 0; i < listOfAccounts.Count(); i++)
+                {
+                    //On every iteration, check if customer is the same as last iteration. 
+                    if (customerForKnrSorting.CustomerID != listOfAccounts[i].CustomerID)
+                    {
+                        customerChangedOnIteration = true;
+                        if (listOfCustomers.Where(x => x.CustomerID == listOfAccounts[i].CustomerID).Count() == 1)
+                        {
+                            //Save current customer in a variable. (Take him from listofcustomers to get him as an object, so we can print all his info)
+                            customerForKnrSorting = listOfCustomers.Where(x => x.CustomerID == listOfAccounts[i].CustomerID).First();
+                            //Add 1 to the counter on top of every account-list (cosmetic feature)
+                            accountCounter = 1;
+                            //Print the new customers info
+                            customerForKnrSorting.PrintCustomerInfo();
+                        }
+                        //This should not be possible:
+                        else
+                        {
+                            throw new Exception("Fejl - flere kunder er tilknyttet samme konto... (Konto-nr: " + listOfAccounts[i].AccountNo + ")");
+                        }
+                    }
+                    else
+                    {
+                        //Cosmetic feature
+                        accountCounter++;
+                    }
+
+                    if (customerChangedOnIteration)
+                        Console.WriteLine("\nKonti tilhørende {0} {1}: ", customerForKnrSorting.FirstName, customerForKnrSorting.LastName);
+
+                    listOfAccounts[i].PrintAccountInfo(false, accountCounter, true);
+
+                    //Only run the check if at least one iteration is left to prevent error on last iteration
+                    if (i + 1 < listOfAccounts.Count())
+                    {
+                        if (listOfAccounts[i + 1].CustomerID != customerForKnrSorting.CustomerID)
+                        {
+                            Console.WriteLine("");
+                            WriteLine(Program.linjeFormat);
+                        }
+                    }
+                    customerChangedOnIteration = false;
+                }
+            }
+            //Normal sorting
+            else
+            {
+                for (int i = 0; i < listOfCustomers.Count(); i++)
+                {
+                    listOfCustomers[i].PrintCustomerInfo();
+
+                    customerAccounts = listOfAccounts.Where(x => x.CustomerID == listOfCustomers[i].CustomerID).ToList();
+                    Console.WriteLine("\nKonti tilhørende {0} {1}: ", listOfCustomers[i].FirstName, listOfCustomers[i].LastName);
+                    for (int x = 0; x < customerAccounts.Count(); x++)
+                    {
+                        customerAccounts[x].PrintAccountInfo(false, i + 1, true);
+                    }
+                    Console.WriteLine("\n");
+                    WriteLine(Program.linjeFormat);
+                }
+            }
+            conn.Close();
             Console.WriteLine("\nTryk på en vilkårlig tast for at vende tilbage til hovedmenuen.");
             Console.ReadKey(true);
             Console.Clear();
         }
 
-        public void PrintCustomerInfo(Customer customer)
-        {
-            Console.WriteLine("\nKunde {0}:\n", customer.CustomerID);
-            Console.WriteLine("Fornavn: \t {0}", customer.FirstName);
-            Console.WriteLine("Efternavn: \t {0}", customer.LastName);
-            Console.WriteLine("Adresse: \t {0}", customer.Address);
-            Console.WriteLine("By: \t\t {0}", customer.City);
-            Console.WriteLine("Postnr: \t {0}", customer.PostalCode);
-            Console.WriteLine("Oprettet: \t {0}", customer.Created.ToString("MMMM dd, yyyy").ToUpper());
-            Console.WriteLine("Aktiv: \t\t {0}", customer.Active ? "Ja" : "Nej");
-        }
         public void PrintCustomerInfo()
         {
-            Console.WriteLine("\nKunde {0}:\n", CustomerID);
-            Console.WriteLine("Fornavn: \t {0}", FirstName);
-            Console.WriteLine("Efternavn: \t {0}", LastName);
+            //Console.WriteLine("\nKunde-ID {0}:\n", CustomerID);
+            Console.WriteLine("\nNavn: \t {0} {1} (ID: {2})", FirstName, LastName, CustomerID);
             Console.WriteLine("Adresse: \t {0}", Address);
             Console.WriteLine("By: \t\t {0}", City);
             Console.WriteLine("Postnr: \t {0}", PostalCode);
